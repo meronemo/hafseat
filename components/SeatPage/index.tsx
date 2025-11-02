@@ -3,7 +3,7 @@
 import { useState, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Share, Printer, ArrowLeft } from "lucide-react"
+import { Share, Printer, ArrowLeft, Pencil, RotateCcw, ArrowLeftRight, Save } from "lucide-react"
 import { useRouter } from "@bprogress/next/app"
 import { Student } from "@/types/settings"
 import { useReactToPrint } from "react-to-print"
@@ -90,6 +90,7 @@ interface SeatPageProps {
   cls: string
   date: string
   cols: number
+  edit: boolean
 }
 
 export default function SeatPage({
@@ -98,10 +99,12 @@ export default function SeatPage({
   grade,
   cls,
   date,
-  cols
+  cols,
+  edit
 }: SeatPageProps) {
   const router = useRouter()
   const [viewMode, setViewMode] = useState<"student" | "teacher">("student")
+  const [editing, setEditing] = useState(false)
   const { start, stop } = useProgress()
   
   const contentRef = useRef<HTMLDivElement>(null)
@@ -212,6 +215,7 @@ export default function SeatPage({
                 variant={viewMode === "student" ? "default" : "ghost"}
                 onClick={() => setViewMode("student")}
                 size="sm"
+                disabled={editing}
               >
                 학생용
               </Button>
@@ -219,6 +223,7 @@ export default function SeatPage({
                 variant={viewMode === "teacher" ? "default" : "ghost"}
                 onClick={() => setViewMode("teacher")}
                 size="sm"
+                disabled={editing}
               >
                 교사용
               </Button>
@@ -230,6 +235,7 @@ export default function SeatPage({
                 size="sm"
                 className="gap-2 hover:bg-primary/10"
                 onClick={handlePrint}
+                disabled={editing}
               >
                 <Printer className="w-4 h-4" />
                 인쇄
@@ -239,14 +245,67 @@ export default function SeatPage({
                 size="sm"
                 className="gap-2 hover:bg-primary/10"
                 onClick={handleShare}
+                disabled={editing}
               >
                 <Share className="w-4 h-4" />
                 공유
               </Button>
             </div>
-          </div>
 
-          <div className="w-24"></div>
+            {/* Edit options */}
+            {edit && (
+              <>
+                <div className="flex gap-2 pl-4 border-l-2 border-muted-foreground/20">
+                  <Button 
+                    variant={editing ? "default" : "outline"}
+                    size="sm"
+                    className="gap-2"
+                    onClick={() => {
+                      setViewMode("student")
+                      setEditing(!editing)
+                    }}
+                  >
+                    <Pencil className="w-4 h-4" />
+                    편집
+                  </Button>
+                </div>
+                
+                {editing && (
+                  <div className="flex gap-2 pl-4 border-l-2 border-muted-foreground/20">
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      className="gap-2"
+                      onClick={() => setEditing(!editing)}
+                    >
+                      <ArrowLeftRight className="w-4 h-4" />
+                      자리 교환
+                    </Button>
+
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      className="gap-2"
+                      onClick={() => setEditing(!editing)}
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                      초기화
+                    </Button>
+
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      className="gap-2"
+                      onClick={() => setEditing(!editing)}
+                    >
+                      <Save className="w-4 h-4" />
+                      저장
+                    </Button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </div>
 
         {/* Seat View Card*/}
@@ -270,6 +329,12 @@ export default function SeatPage({
                 <TeacherDesk viewMode={viewMode}/>  
               </CardContent>
             )}
+
+            <div className="text-center mt-6">
+              <p className="text-xs text-muted-foreground">
+                HAFSSeat.
+              </p>
+            </div>
           </Card>
         </div>
       </div>

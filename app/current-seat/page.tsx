@@ -20,7 +20,7 @@ export default async function Page() {
       cls={cls}
       date={date}
       cols={seat[0].length}
-      edit={false}
+      edit={true}
     />
   )
 }

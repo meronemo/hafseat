@@ -10,7 +10,7 @@ export function CurrentSeatButton() {
     <Button
       variant="outline"
       size="lg"
-      onClick={() => router.push("/seat")}
+      onClick={() => router.push("/current-seat")}
       className="text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all"
     >
       <div className="flex gap-2 items-center">
