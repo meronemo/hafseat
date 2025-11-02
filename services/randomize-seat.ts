@@ -47,7 +47,7 @@ async function makeNewSeat(
       for (let c=0; c<cols; c++) {
         let thisStudent = seat[r][c]
         if (!thisStudent) continue
-        thisStudent.isBack = (r == rows-1)
+        thisStudent.isBack = (r == rows-1 || (r == rows-2 && seat[r+1][c] == null))
         thisStudent.isSide = (c == 0 || c == cols-1)
         studentsPool.push(thisStudent)
       }
@@ -78,6 +78,7 @@ async function makeNewSeat(
 
       // find suitable seat with rules applied
       let idx = 0
+
       if (avoidUnfavorableSeat == "any" && (thisStudent.isBack || thisStudent.isSide)) {
         while (seatPool[idx][0] == rows-1 || seatPool[idx][1] == 0 || seatPool[idx][1] == cols-1) {
           idx++
