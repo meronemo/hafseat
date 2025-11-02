@@ -4,6 +4,7 @@ import { PageTransition } from "./providers/PageTransition"
 import ProgressbarProvider from "./providers/ProgressbarProvider"
 import { Toaster } from "sonner"
 import KakaoScript from "@/lib/KakaoScript"
+import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 
 const pretendard = localFont({
@@ -29,6 +30,7 @@ export default function RootLayout({
             <Toaster />
           </SessionProviderClient>
         </ProgressbarProvider>
+        <Analytics />
       </body>
       <KakaoScript />
     </html>
