@@ -215,7 +215,8 @@ export async function randomizeSeat(session: Session) {
   const applyRules = !(!seat || settings.changed || studentsChanged) // true if current seat is not blank or setting is not changed or students is not changed
   const newSeat = await randomize(settings, students, seat, applyRules)
   
-  const now = new Date()
+  const timeZone = "Asia/Seoul"
+  const now = new Date(new Date().toLocaleString("en-US", { timeZone }))
   const dateString = `${now.getFullYear()}. ${now.getMonth() + 1}. ${now.getDate()}.`
   
   // reset changed flags
