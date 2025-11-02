@@ -3,10 +3,11 @@
 import { useState, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Download, Printer, ArrowLeft } from "lucide-react"
+import { Share, Printer, ArrowLeft } from "lucide-react"
 import { useRouter } from "@bprogress/next/app"
 import { Student } from "@/types/settings"
 import { useReactToPrint } from "react-to-print"
+import * as htmlToImage from "html-to-image"
 
 interface TeacherDeskProps {
   viewMode?: "student" | "teacher"
@@ -70,6 +71,17 @@ function SeatGrid({ seat, cols }: SeatGridProps) {
   )
 }
 
+function base64ToBlob(base64: string, mime = "image/png") {
+  const byteString = atob(base64.split(",")[1])
+  const ab = new ArrayBuffer(byteString.length)
+  const ia = new Uint8Array(ab)
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i)
+  }
+  return new Blob([ab], { type: mime })
+}
+
+
 interface SeatPageProps {
   seat: (Student | null)[][]
   reverseSeat: (Student | null)[][]
@@ -96,7 +108,7 @@ export default function SeatPage({
   const pxToMm = (px: number) => px * 25.4 / 96
 
   const handlePrint = () => {
-    const parentWidth = 297 // mm 단위, 여백 제외
+    const parentWidth = 297
     const parentHeight = 210
     const el = contentRef.current
     if (!el) return
@@ -110,6 +122,66 @@ export default function SeatPage({
     const scale = Math.min(scaleX, scaleY, 1)
     el.style.setProperty('--scale', scale.toString())
     reactToPrintFn()
+  }
+
+  const handleShare = () => {
+    const seatView = document.getElementById("seat-view")
+    if (!seatView) return
+
+    htmlToImage.toPng(seatView).then((dataUrl) => {
+      const img = new Image()
+      img.src = dataUrl
+      img.onload = () => {
+        // scale image for kakao share
+        let { width, height } = img
+        const minSize = 400
+        const maxSize = 800
+        if (width > height) {
+          if (width > maxSize) {
+            height = height * (maxSize / width)
+            width = maxSize
+          } else if (width < minSize) {
+            height = height * (minSize / width)
+            width = minSize
+          }
+        }
+        else {
+          if (height > maxSize) {
+            width = width * (maxSize / height)
+            height = maxSize
+          } else if (height < minSize) {
+            width = width * (minSize / height)
+            height = minSize
+          }
+        }
+
+        const blob = base64ToBlob(dataUrl)
+        const file = new File([blob], "image.png")
+
+        window.Kakao.Share.uploadImage({
+          file: [file]
+        })
+          .then(function(response: any) {
+            const imageUrl = response.infos.original.url
+            const imagePath = new URL(imageUrl).pathname
+            window.Kakao.Share.sendCustom({
+              templateId: 125500,
+              templateArgs: {
+                title: `${grade}학년 ${cls}반 자리 배치도`,
+                date: date,
+                image: imageUrl,
+                width: width,
+                height: height,
+                path: imagePath
+              }
+            })
+          })
+          .catch(function(error: any) {
+            console.log(error)
+          })
+      }
+    })
+
   }
 
   return (
@@ -154,6 +226,15 @@ export default function SeatPage({
               >
                 <Printer className="w-4 h-4" />
                 인쇄
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="gap-2 hover:bg-primary/10"
+                onClick={handleShare}
+              >
+                <Share className="w-4 h-4" />
+                공유
               </Button>
             </div>
           </div>

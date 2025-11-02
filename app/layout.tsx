@@ -3,6 +3,7 @@ import { SessionProviderClient } from "./providers/SessionProviderClient"
 import { PageTransition } from "./providers/PageTransition"
 import ProgressbarProvider from "./providers/ProgressbarProvider"
 import { Toaster } from "sonner"
+import KakaoScript from "@/lib/KakaoScript"
 import "./globals.css"
 
 const pretendard = localFont({
@@ -29,6 +30,7 @@ export default function RootLayout({
           </SessionProviderClient>
         </ProgressbarProvider>
       </body>
+      <KakaoScript />
     </html>
   )
 }
