@@ -115,8 +115,7 @@ export default function Settings({ user, generalSettings, students }: SettingsPr
                       columns={generalSettings.columns}
                       avoidSameSeat={generalSettings.avoidSameSeat}
                       avoidSamePartner={generalSettings.avoidSamePartner}
-                      avoidBackRow={generalSettings.avoidBackRow}
-                      avoidSide={generalSettings.avoidSide}
+                      avoidUnfavorableSeat={generalSettings.avoidUnfavorableSeat}
                       changed={generalSettings.changed}
                     />
                   </motion.div>

@@ -1,10 +1,11 @@
+export type AvoidUnfavorableSeat = 'none' | 'back' | 'side' | 'both' | 'any'
+
 export interface Settings {
   rows: number
   columns: number
   avoidSameSeat: boolean
   avoidSamePartner: boolean
-  avoidBackRow: boolean
-  avoidSide: boolean
+  avoidUnfavorableSeat: AvoidUnfavorableSeat
   changed: boolean
 }
 
@@ -25,8 +26,7 @@ export const defaultSettings: Settings = {
   columns: 8,
   avoidSameSeat: true,
   avoidSamePartner: true,
-  avoidBackRow: true,
-  avoidSide: true,
+  avoidUnfavorableSeat: 'none',
   changed: false
 }
 

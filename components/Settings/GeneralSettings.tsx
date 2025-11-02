@@ -5,6 +5,15 @@ import { Settings } from "@/types/settings"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
 
@@ -13,16 +22,14 @@ export function GeneralSettings({
   columns,
   avoidSameSeat,
   avoidSamePartner,
-  avoidBackRow,
-  avoidSide,
+  avoidUnfavorableSeat,
   changed
 }: Settings) {
   const [rowsState, setRows] = useState(4)
   const [columnsState, setColumns] = useState(8)
   const [avoidSameSeatState, setAvoidSameSeat] = useState(true)
   const [avoidSamePartnerState, setAvoidSamePartner] = useState(true)
-  const [avoidBackRowState, setAvoidBackRow] = useState(true)
-  const [avoidSideState, setAvoidSide] = useState(true)
+  const [avoidUnfavorableSeatState, setAvoidUnfavorableSeat] = useState('none')
   const [saveLoading, setSaveLoading] = useState(false)
 
   const handleSave = async () => {
@@ -35,8 +42,7 @@ export function GeneralSettings({
         columns: columnsState,
         avoidSameSeat: avoidSameSeatState,
         avoidSamePartner: avoidSamePartnerState,
-        avoidBackRow: avoidBackRowState,
-        avoidSide: avoidSideState
+        avoidUnfavorableSeat: avoidUnfavorableSeatState
       }),
     })
     setSaveLoading(false)
@@ -54,8 +60,7 @@ export function GeneralSettings({
     setColumns(columns)
     setAvoidSameSeat(avoidSameSeat)
     setAvoidSamePartner(avoidSamePartner)
-    setAvoidBackRow(avoidBackRow)
-    setAvoidSide(avoidSide)
+    setAvoidUnfavorableSeat(avoidUnfavorableSeat)
   }, [])
 
   return (
@@ -69,7 +74,7 @@ export function GeneralSettings({
           <div className="flex gap-4 items-center">
             <div className="flex items-center gap-2">
               <label htmlFor="rows" className="text-sm text-muted-foreground whitespace-nowrap">
-                행 (세로)
+                행 (가로)
               </label>
               <Input
                 id="rows"
@@ -81,7 +86,7 @@ export function GeneralSettings({
             </div>
             <div className="flex items-center gap-2">
               <label htmlFor="cols" className="text-sm text-muted-foreground whitespace-nowrap">
-                열 (가로)
+                열 (세로)
               </label>
               <Input
                 id="cols"
@@ -123,29 +128,40 @@ export function GeneralSettings({
             </div>
             <Switch id="avoid-same-partner" checked={avoidSamePartnerState} onCheckedChange={setAvoidSamePartner} />
           </div>
-  
-          <div className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/5 transition-colors">
-            <div className="space-y-0.5">
-              <label htmlFor="avoid-back-row" className="font-medium cursor-pointer">
-                맨 뒷자리 중복 방지
-              </label>
-              <p className="text-sm text-muted-foreground">
-                이전에 가장 마지막 행(가로줄)에 앉았던 학생이 같은 구역에 앉지 않도록 합니다.
-              </p>
-            </div>
-            <Switch id="avoid-back-row" checked={avoidBackRowState} onCheckedChange={setAvoidBackRow} />
-          </div>
 
-          <div className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/5 transition-colors">
+          <div className="items-center justify-between p-4 space-y-4 rounded-lg border bg-card hover:bg-accent/5 transition-colors">
             <div className="space-y-0.5">
-              <label htmlFor="avoid-side" className="font-medium cursor-pointer">
-                양끝 자리 중복 방지
+              <label htmlFor="avoid-unfavorable-seat" className="font-medium cursor-pointer">
+                불리한 자리 재배치 방지
               </label>
               <p className="text-sm text-muted-foreground">
-                이전에 첫번째 또는 마지막 열(세로줄)에 앉았던 학생들이 같은 구역에 앉지 않도록 합니다.
+                이전에 불리한 자리에 앉았던 학생이 다시 불리한 자리에 배치되지 않도록 합니다.
               </p>
             </div>
-            <Switch id="avoid-side" checked={avoidSideState} onCheckedChange={setAvoidSide} />
+            <Select value={avoidUnfavorableSeatState} onValueChange={setAvoidUnfavorableSeat}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="선택" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">설정 안함</SelectItem>
+                <SelectItem value="back">
+                  맨뒤
+                  <p className="text-sm text-muted-foreground">맨뒤 → 맨뒤 방지</p>
+                </SelectItem>
+                <SelectItem value="side">
+                  양끝
+                  <p className="text-sm text-muted-foreground">양끝(첫번째, 마지막 열) → 양끝 방지</p>
+                </SelectItem>
+                <SelectItem value="both">
+                  맨뒤와 양끝 각각
+                  <p className="text-sm text-muted-foreground">맨뒤 → 맨뒤 그리고 양끝 → 양끝 방지</p>
+                </SelectItem>
+                <SelectItem value="any">
+                  맨뒤와 양끝 모두
+                  <p className="text-sm text-muted-foreground">맨뒤 또는 양끝 → 맨뒤 또는 양끝 방지</p>
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 

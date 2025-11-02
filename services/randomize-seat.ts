@@ -21,8 +21,7 @@ async function makeNewSeat(
   const studentsCount = students.length
   const rows = settings.rows
   const cols = settings.columns
-  const avoidBackRow = settings.avoidBackRow
-  const avoidSide = settings.avoidSide
+  const avoidUnfavorableSeat = settings.avoidUnfavorableSeat
 
   let newSeat: (Student | null)[][] = Array.from({ length: rows }, () =>
     Array(cols).fill(null)
@@ -68,8 +67,6 @@ async function makeNewSeat(
   }
   studentsPool = [...both, ...either, ...none]
 
-  console.log(studentsPool)
-
   // arrange new seat
   for (let i=0; i<studentsCount; i++) {
     if (!applyRules) {
@@ -81,17 +78,33 @@ async function makeNewSeat(
 
       // find suitable seat with rules applied
       let idx = 0
-      console.log(seatPool)
-      if (avoidBackRow && thisStudent.isBack) {
-        while (seatPool[idx][0] == rows-1) {
+      if (avoidUnfavorableSeat == "any" && (thisStudent.isBack || thisStudent.isSide)) {
+        while (seatPool[idx][0] == rows-1 || seatPool[idx][1] == 0 || seatPool[idx][1] == cols-1) {
           idx++
         }
-      }
-      if (avoidSide && thisStudent.isSide) {
-        while (seatPool[idx][1] == 0 || seatPool[idx][1] == cols-1) {
-          idx++
+      } else {
+        if (avoidUnfavorableSeat == "both") {
+          if (thisStudent.isBack) {
+            while (seatPool[idx][0] == rows-1) {
+              idx++
+            }    
+          }
+          if (thisStudent.isSide) {
+            while (seatPool[idx][1] == 0 || seatPool[idx][1] == cols-1) {
+              idx++
+            }
+          }
+        } else if (avoidUnfavorableSeat == "back" && thisStudent.isBack) {
+          while (seatPool[idx][0] == rows-1) {
+            idx++
+          }
+        } else if (avoidUnfavorableSeat == "side" && thisStudent.isSide) {
+          while (seatPool[idx][1] == 0 || seatPool[idx][1] == cols-1) {
+            idx++
+          }
         }
       }
+        
       const thisRow = seatPool[idx][0]
       const thisCol = seatPool[idx][1]
       seatPool.splice(idx, 1) // remove selected seat from pool
