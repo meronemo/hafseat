@@ -8,6 +8,7 @@ import { useRouter } from "@bprogress/next/app"
 import { Student } from "@/types/settings"
 import { useReactToPrint } from "react-to-print"
 import * as htmlToImage from "html-to-image"
+import { useProgress } from "@bprogress/next"
 
 interface TeacherDeskProps {
   viewMode?: "student" | "teacher"
@@ -101,6 +102,7 @@ export default function SeatPage({
 }: SeatPageProps) {
   const router = useRouter()
   const [viewMode, setViewMode] = useState<"student" | "teacher">("student")
+  const { start, stop } = useProgress()
   
   const contentRef = useRef<HTMLDivElement>(null)
   const reactToPrintFn = useReactToPrint({ contentRef })
@@ -108,6 +110,7 @@ export default function SeatPage({
   const pxToMm = (px: number) => px * 25.4 / 96
 
   const handlePrint = () => {
+    start()
     const parentWidth = 297
     const parentHeight = 210
     const el = contentRef.current
@@ -122,9 +125,11 @@ export default function SeatPage({
     const scale = Math.min(scaleX, scaleY, 1)
     el.style.setProperty('--scale', scale.toString())
     reactToPrintFn()
+    stop()
   }
 
   const handleShare = () => {
+    start()
     const seatView = document.getElementById("seat-view")
     if (!seatView) return
 
@@ -161,10 +166,10 @@ export default function SeatPage({
         window.Kakao.Share.uploadImage({
           file: [file]
         })
-          .then(function(response: any) {
+          .then(async function(response: any) {
             const imageUrl = response.infos.original.url
             const imagePath = new URL(imageUrl).pathname
-            window.Kakao.Share.sendCustom({
+            await window.Kakao.Share.sendCustom({
               templateId: 125500,
               templateArgs: {
                 title: `${grade}학년 ${cls}반 자리 배치도`,
@@ -175,9 +180,11 @@ export default function SeatPage({
                 path: imagePath
               }
             })
+            stop()
           })
           .catch(function(error: any) {
             console.log(error)
+            stop()
           })
       }
     })
