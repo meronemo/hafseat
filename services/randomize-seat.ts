@@ -40,14 +40,14 @@ async function makeNewSeat(
 
   // configure studentsPool
   let studentsPool: Student[] = []
-  if (!seat) {
+  if (!seat || !applyRules) {
     studentsPool = students
   } else {
     for (let r=0; r<rows; r++) {
       for (let c=0; c<cols; c++) {
         let thisStudent = seat[r][c]
         if (!thisStudent) continue
-        thisStudent.isBack = (r == rows-1 || (r == rows-2 && seat[r+1][c] == null))
+        thisStudent.isBack = (r == rows-1 || (r == rows-2 && !seat[r+1][c]))
         thisStudent.isSide = (c == 0 || c == cols-1)
         studentsPool.push(thisStudent)
       }

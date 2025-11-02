@@ -28,27 +28,23 @@ export default async function Page() {
     redirect("/confirm-representative")
   }
 
-  try {
-    const [seatData, generalSettingsData, studentsSettingsData] = await Promise.all([
-      viewSeat(session),
-      getGeneralSettings(session),
-      getStudentsSettings(session)
-    ])
+  const [seatData, generalSettingsData, studentsSettingsData] = await Promise.all([
+    viewSeat(session),
+    getGeneralSettings(session),
+    getStudentsSettings(session)
+  ])
 
-    const seat = seatData.seat
-    const generalSettings = generalSettingsData.settings
-    const students = studentsSettingsData.students
-    
-    const seatCount = generalSettings.rows * generalSettings.columns
-    const studentCount = students.length
-    const isSeatNull = !seat
-    const settingsChanged = generalSettings.changed || studentsSettingsData.changed
+  const seat = seatData.seat
+  const generalSettings = generalSettingsData.settings
+  const students = studentsSettingsData.students
   
-    return <HomePage 
-      sessionData={session}
-      data={{ seatCount, studentCount, isSeatNull, settingsChanged }}
-    />
-  } catch (error) {
-    console.error(error)
-  }
+  const seatCount = generalSettings.rows * generalSettings.columns
+  const studentCount = students.length
+  const isSeatNull = !seat
+  const settingsChanged = generalSettings.changed || studentsSettingsData.changed
+
+  return <HomePage 
+    sessionData={session}
+    data={{ seatCount, studentCount, isSeatNull, settingsChanged }}
+  />
 }

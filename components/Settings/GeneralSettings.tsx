@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Settings } from "@/types/settings"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
@@ -8,9 +8,7 @@ import { Button } from "@/components/ui/button"
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
@@ -23,13 +21,12 @@ export function GeneralSettings({
   avoidSameSeat,
   avoidSamePartner,
   avoidUnfavorableSeat,
-  changed
 }: Settings) {
-  const [rowsState, setRows] = useState(4)
-  const [columnsState, setColumns] = useState(8)
-  const [avoidSameSeatState, setAvoidSameSeat] = useState(true)
-  const [avoidSamePartnerState, setAvoidSamePartner] = useState(true)
-  const [avoidUnfavorableSeatState, setAvoidUnfavorableSeat] = useState('none')
+  const [rowsState, setRows] = useState(rows)
+  const [columnsState, setColumns] = useState(columns)
+  const [avoidSameSeatState, setAvoidSameSeat] = useState(avoidSameSeat)
+  const [avoidSamePartnerState, setAvoidSamePartner] = useState(avoidSamePartner)
+  const [avoidUnfavorableSeatState, setAvoidUnfavorableSeat] = useState(avoidUnfavorableSeat)
   const [saveLoading, setSaveLoading] = useState(false)
 
   const handleSave = async () => {
@@ -54,14 +51,6 @@ export function GeneralSettings({
       console.log(data.error)
     }
   }
-
-  useEffect(() => {
-    setRows(rows)
-    setColumns(columns)
-    setAvoidSameSeat(avoidSameSeat)
-    setAvoidSamePartner(avoidSamePartner)
-    setAvoidUnfavorableSeat(avoidUnfavorableSeat)
-  }, [])
 
   return (
     <div>
@@ -138,7 +127,12 @@ export function GeneralSettings({
                 이전에 불리한 자리에 앉았던 학생이 다시 불리한 자리에 배치되지 않도록 합니다.
               </p>
             </div>
-            <Select value={avoidUnfavorableSeatState} onValueChange={setAvoidUnfavorableSeat}>
+            <Select
+              value={avoidUnfavorableSeatState}
+              onValueChange={(value: string) =>
+                setAvoidUnfavorableSeat(value as "none" | "back" | "side" | "both" | "any")
+              }
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="선택" />
               </SelectTrigger>

@@ -1,15 +1,18 @@
 "use client"
 
-import { useState, useEffect, useRef, type ChangeEvent } from "react"
-import { StudentsSettingsProps } from "@/app/settings/page"
+import { useState, useRef, type ChangeEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
 import { Plus, Trash2, Loader2 } from "lucide-react"
 import { Student } from "@/types/settings"
 
+interface StudentsSettingsProps {
+  students: Student[]
+}
+
 export function StudentsSettings({ students }: StudentsSettingsProps) {
-  const [studentsState, setStudents] = useState<Student[]>([])
+  const [studentsState, setStudents] = useState<Student[]>(students)
   const [newStudentNumber, setNewStudentNumber] = useState("")
   const [newStudentName, setNewStudentName] = useState("")
   const [validationError, setValidationError] = useState("")
@@ -36,7 +39,9 @@ export function StudentsSettings({ students }: StudentsSettingsProps) {
 
     const newStudent: Student = {
       number: studentNumber,
-      name: newStudentName.trim()
+      name: newStudentName.trim(),
+      isSide: null,
+      isBack: null
     }
 
     setStudents([...studentsState, newStudent].sort((a, b) => a.number - b.number))
@@ -76,10 +81,6 @@ export function StudentsSettings({ students }: StudentsSettingsProps) {
 
     return
   }
-
-  useEffect(() => {
-    setStudents(students)
-  }, [])
 
   return (
     <div className="space-y-4">

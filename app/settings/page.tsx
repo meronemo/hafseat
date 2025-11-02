@@ -12,27 +12,21 @@ export default async function SettingsPage() {
   }
 
   const { email, username, grade, class: userClass } = session.user
+  const [{ settings }, { students }] = await Promise.all([
+    getGeneralSettings(session),
+    getStudentsSettings(session)
+  ])
 
-  try {
-    const [{ settings }, { students }] = await Promise.all([
-      getGeneralSettings(session),
-      getStudentsSettings(session)
-    ])
-
-    return (
-      <Settings
-        user={{
-          email: email ?? "",
-          name: username ?? "",
-          grade: grade ?? 0,
-          class: userClass ?? ""
-        }}
-        generalSettings={settings}
-        students={students ?? []}
-      />
-    )
-  } catch (error) {
-    console.error("Failed to load settings:", error)
-    redirect("/")
-  }
+  return (
+    <Settings
+      user={{
+        email: email ?? "",
+        name: username ?? "",
+        grade: grade ?? 0,
+        class: userClass ?? ""
+      }}
+      generalSettings={settings}
+      students={students ?? []}
+    />
+  )
 }
