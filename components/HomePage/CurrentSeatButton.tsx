@@ -11,10 +11,12 @@ export function CurrentSeatButton() {
       variant="outline"
       size="lg"
       onClick={() => router.push("/seat")}
-      className="rounded-full px-8 py-4 text-lg"
+      className="text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all"
     >
-      <LayoutGrid className="w-5 h-5 mr-2" />
-      현재 자리 확인
+      <div className="flex gap-2 items-center">
+        <LayoutGrid className="w-5 h-5 mr-2" />
+        <p>현재 자리 확인</p>
+      </div>
     </Button>
   )
 }
