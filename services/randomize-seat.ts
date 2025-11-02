@@ -22,11 +22,13 @@ async function makeNewSeat(
   const rows = settings.rows
   const cols = settings.columns
   const avoidBackRow = settings.avoidBackRow
+  const avoidSide = settings.avoidSide
 
   let newSeat: (Student | null)[][] = Array.from({ length: rows }, () =>
     Array(cols).fill(null)
   )
 
+  // configure seatPool
   let seatPool: [number, number][] = []
   for (let r=0; r<rows; r++) {
     for (let c=0; c<cols; c++) {
@@ -37,29 +39,64 @@ async function makeNewSeat(
   }
   seatPool = shuffle(seatPool)
 
-  if (!seat || !applyRules || !avoidBackRow) { // if applyRules is false or no avoidBackRow rule
-    for (let i=0; i<studentsCount; i++) { 
-      let newRow = seatPool[i][0]
-      let newCol = seatPool[i][1]
-      newSeat[newRow][newCol] = students[i]
-    }
-  } else { // avoidBackRow rule applied
-    for (let r=rows-1; r>=0; r--) {
+  // configure studentsPool
+  let studentsPool: Student[] = []
+  if (!seat) {
+    studentsPool = students
+  } else {
+    for (let r=0; r<rows; r++) {
       for (let c=0; c<cols; c++) {
-        if (seatPool.length === 0 || seat[r][c] === null) break
-        let newRow = 0
-        let newCol = 0
-        let idx = 0
-        if (avoidBackRow && r === rows-1) {
-          while (seatPool[idx][0] === rows-1) {
-            idx++
-          }
-        }
-        newRow = seatPool[idx][0]
-        newCol = seatPool[idx][1]
-        newSeat[newRow][newCol] = seat[r][c]
-        seatPool.splice(idx, 1)
+        let thisStudent = seat[r][c]
+        if (!thisStudent) continue
+        thisStudent.isBack = (r == rows-1)
+        thisStudent.isSide = (c == 0 || c == cols-1)
+        studentsPool.push(thisStudent)
       }
+    }
+  }
+  
+  // prioritize students by previous seat: both isBack && isSide first, then either, then none
+  const both: Student[] = []
+  const either: Student[] = []
+  const none: Student[] = []
+  for (const s of studentsPool) {
+    const isBack = !!s.isBack
+    const isSide = !!s.isSide
+    if (isBack && isSide) both.push(s)
+    else if (isBack || isSide) either.push(s)
+    else none.push(s)
+  }
+  studentsPool = [...both, ...either, ...none]
+
+  console.log(studentsPool)
+
+  // arrange new seat
+  for (let i=0; i<studentsCount; i++) {
+    if (!applyRules) {
+      const thisRow = seatPool[i][0]
+      const thisCol = seatPool[i][1]
+      newSeat[thisRow][thisCol] = studentsPool[i]
+    } else {
+      const thisStudent = studentsPool[i]
+
+      // find suitable seat with rules applied
+      let idx = 0
+      console.log(seatPool)
+      if (avoidBackRow && thisStudent.isBack) {
+        while (seatPool[idx][0] == rows-1) {
+          idx++
+        }
+      }
+      if (avoidSide && thisStudent.isSide) {
+        while (seatPool[idx][1] == 0 || seatPool[idx][1] == cols-1) {
+          idx++
+        }
+      }
+      const thisRow = seatPool[idx][0]
+      const thisCol = seatPool[idx][1]
+      seatPool.splice(idx, 1) // remove selected seat from pool
+
+      newSeat[thisRow][thisCol] = thisStudent
     }
   }
 

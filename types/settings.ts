@@ -4,12 +4,15 @@ export interface Settings {
   avoidSameSeat: boolean
   avoidSamePartner: boolean
   avoidBackRow: boolean
+  avoidSide: boolean
   changed: boolean
 }
 
 export interface Student {
   number: number
   name: string
+  isSide: boolean | null // isSide and isBack for new seat randomizing
+  isBack: boolean | null 
 }
 
 export interface Students {
@@ -23,6 +26,7 @@ export const defaultSettings: Settings = {
   avoidSameSeat: true,
   avoidSamePartner: true,
   avoidBackRow: true,
+  avoidSide: true,
   changed: false
 }
 

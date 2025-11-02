@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { GeneralSettingsProps } from "@/app/settings/page"
+import { Settings } from "@/types/settings"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
@@ -13,13 +13,16 @@ export function GeneralSettings({
   columns,
   avoidSameSeat,
   avoidSamePartner,
-  avoidBackRow
-}: GeneralSettingsProps) {
-  const [rowsState, setRows] = useState(8)
-  const [columnsState, setColumns] = useState(4)
+  avoidBackRow,
+  avoidSide,
+  changed
+}: Settings) {
+  const [rowsState, setRows] = useState(4)
+  const [columnsState, setColumns] = useState(8)
   const [avoidSameSeatState, setAvoidSameSeat] = useState(true)
   const [avoidSamePartnerState, setAvoidSamePartner] = useState(true)
-  const [avoidBackRowState, setAvoidBackRow] = useState(true) 
+  const [avoidBackRowState, setAvoidBackRow] = useState(true)
+  const [avoidSideState, setAvoidSide] = useState(true)
   const [saveLoading, setSaveLoading] = useState(false)
 
   const handleSave = async () => {
@@ -32,7 +35,8 @@ export function GeneralSettings({
         columns: columnsState,
         avoidSameSeat: avoidSameSeatState,
         avoidSamePartner: avoidSamePartnerState,
-        avoidBackRow: avoidBackRowState
+        avoidBackRow: avoidBackRowState,
+        avoidSide: avoidSideState
       }),
     })
     setSaveLoading(false)
@@ -51,6 +55,7 @@ export function GeneralSettings({
     setAvoidSameSeat(avoidSameSeat)
     setAvoidSamePartner(avoidSamePartner)
     setAvoidBackRow(avoidBackRow)
+    setAvoidSide(avoidSide)
   }, [])
 
   return (
@@ -122,13 +127,25 @@ export function GeneralSettings({
           <div className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/5 transition-colors">
             <div className="space-y-0.5">
               <label htmlFor="avoid-back-row" className="font-medium cursor-pointer">
-                맨 뒤 자리 중복 방지
+                맨 뒷자리 중복 방지
               </label>
               <p className="text-sm text-muted-foreground">
-                이전에 맨 뒤에 앉았던 학생이 다시 맨 뒤에 앉지 않도록 합니다.
+                이전에 가장 마지막 행(가로줄)에 앉았던 학생이 같은 구역에 앉지 않도록 합니다.
               </p>
             </div>
             <Switch id="avoid-back-row" checked={avoidBackRowState} onCheckedChange={setAvoidBackRow} />
+          </div>
+
+          <div className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/5 transition-colors">
+            <div className="space-y-0.5">
+              <label htmlFor="avoid-side" className="font-medium cursor-pointer">
+                양끝 자리 중복 방지
+              </label>
+              <p className="text-sm text-muted-foreground">
+                이전에 첫번째 또는 마지막 열(세로줄)에 앉았던 학생들이 같은 구역에 앉지 않도록 합니다.
+              </p>
+            </div>
+            <Switch id="avoid-side" checked={avoidSideState} onCheckedChange={setAvoidSide} />
           </div>
         </div>
 

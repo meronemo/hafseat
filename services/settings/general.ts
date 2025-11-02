@@ -15,7 +15,7 @@ export async function getGeneralSettings(session: Session) {
 }
 
 export async function writeGeneralSettings(session: Session, req: Request) {
-   let body = await req.json()
+  let body = await req.json()
   body.changed = false
   const userClassId = session.user.classId
 

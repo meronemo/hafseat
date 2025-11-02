@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Student } from "@/types/settings"
+import { type Settings, Student } from "@/types/settings"
 import { GeneralSettings } from "@/components/Settings/GeneralSettings"
 import { StudentsSettings } from "@/components/Settings/StudentsSettings"
 import { Button } from "@/components/ui/button"
@@ -22,13 +22,7 @@ interface SettingsProps {
     grade: number
     class: string
   }
-  generalSettings: {
-    rows: number
-    columns: number
-    avoidSameSeat: boolean
-    avoidSamePartner: boolean
-    avoidBackRow: boolean
-  }
+  generalSettings: Settings
   students: Student[]
 }
 
@@ -122,6 +116,8 @@ export default function Settings({ user, generalSettings, students }: SettingsPr
                       avoidSameSeat={generalSettings.avoidSameSeat}
                       avoidSamePartner={generalSettings.avoidSamePartner}
                       avoidBackRow={generalSettings.avoidBackRow}
+                      avoidSide={generalSettings.avoidSide}
+                      changed={generalSettings.changed}
                     />
                   </motion.div>
                 )}
