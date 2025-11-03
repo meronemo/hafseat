@@ -8,15 +8,13 @@ export function EditSeatButton() {
   const router = useRouter()
   return (
     <Button
-      variant="outline"
-      size="lg"
+      variant="ghost"
+      size="sm"
       onClick={() => router.push("/seat/edit")}
-      className="text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all"
+      className="rounded-full px-2.5 py-1.5 h-auto"
     >
-      <div className="flex gap-2 items-center">
-        <Pencil className="w-5 h-5 mr-2" />
-        <p>현재 자리 수정</p>
-      </div>
+      <Pencil className="w-4 h-4 mr-1.5" />
+      <span className="text-sm">자리 수정</span>
     </Button>
   )
 }

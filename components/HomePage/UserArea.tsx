@@ -6,6 +6,7 @@ import { User } from "lucide-react"
 import { LoginButton } from "./UserArea/LoginButton"
 import { LogoutButton } from "./UserArea/LogoutButton"
 import { SettingsButton } from "./UserArea/SettingsButton"
+import { EditSeatButton } from "./UserArea/EditSeatButton"
 
 interface UserAreaProps {
   session: Session | null
@@ -38,11 +39,12 @@ export function UserArea({ session }: UserAreaProps) {
           <LogoutButton />
         </div>
 
-        <div className="bg-muted/30 rounded-lg px-3 py-2.5 flex items-center gap-3">
-          <div className="flex-1">
-            <div className="text-lg font-bold">{displayClass}</div>
+        <div className="bg-muted/30 rounded-lg px-3 py-2.5 items-center gap-3">
+          <div className="text-xl font-bold mb-2">{displayClass}</div>
+          <div className="flex-1 gap-2">
+            <SettingsButton />
+            <EditSeatButton />
           </div>
-          <SettingsButton />
         </div>
       </CardContent>
     </Card>
