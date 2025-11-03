@@ -5,7 +5,7 @@ import { UserArea } from "@/components/HomePage/UserArea"
 import { RunButton } from "@/components/HomePage/RunButton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircleIcon } from "lucide-react"
-import { CurrentSeatButton } from "./CurrentSeatButton"
+import { EditSeatButton } from "./EditSeatButton"
 
 export default function HomePage({ sessionData, data }: HomeProps) {
   const { seatCount=0, studentCount=0, isSeatNull=true, settingsChanged=false } = data || {}
@@ -76,7 +76,7 @@ export default function HomePage({ sessionData, data }: HomeProps) {
 
                 <div className="space-y-4">
                   <div className="text-center">
-                    <CurrentSeatButton />
+                    <EditSeatButton />
                   </div>
 
                   <div className="text-center">
