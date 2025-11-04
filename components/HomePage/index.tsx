@@ -1,15 +1,20 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { HomeProps } from "@/app/page"
 import { useRouter } from "@bprogress/next/app"
 import { UserArea } from "@/components/HomePage/UserArea"
 import { RunButton } from "@/components/HomePage/RunButton"
+import { AnnouncementDialog } from "@/components/HomePage/AnnouncementDialog"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertCircleIcon } from "lucide-react"
+import { AlertCircleIcon, Bell } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 export default function HomePage({ sessionData, data }: HomeProps) {
-  const { seatCount=0, studentCount=0, isSeatNull=true, settingsChanged=false } = data || {}
+  const { seatCount=0, studentCount=0, isSeatNull=true, settingsChanged=false, readNotifications=false } = data || {}
+  
+  const [isAnnouncementOpen, setIsAnnouncementOpen] = useState(false)
+  const [isReadNotifications, setIsReadNotifications] = useState(readNotifications)
   
   const router = useRouter()
   useEffect(() => {
@@ -39,12 +44,32 @@ export default function HomePage({ sessionData, data }: HomeProps) {
               </span>
             </div>
             <p className=" text-muted-foreground">공정하고 간편한 자리 배치</p>
+
+            <Button
+              variant="outline"
+              className="group relative hover:bg-accent"
+              onClick={() => {
+                setIsAnnouncementOpen(true)
+                setIsReadNotifications(true)
+                fetch("/api/read-notifications", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ "data": true })
+                })
+              }}
+            >
+              <Bell className="w-4 h-4 mr-2" />
+              공지사항
+              {!isReadNotifications && (
+                <span className="absolute top-0 right-0 h-2 w-2 bg-destructive rounded-full"></span>
+              )}
+            </Button>
           </div>
   
           <div className="text-center space-y-8 w-full">
             {sessionData ? (
               <div className="space-y-6">
-                <div className="text-center">
+                <div className="text-center space-y-4">
                   <UserArea session={sessionData} />
                 </div>
 
@@ -108,6 +133,12 @@ export default function HomePage({ sessionData, data }: HomeProps) {
           Made by <span className="font-medium text-foreground">10630최시원</span>
         </p>
       </footer>
+
+      {/* Announcement Dialog */}
+      <AnnouncementDialog 
+        open={isAnnouncementOpen} 
+        onOpenChange={setIsAnnouncementOpen} 
+      />
     </main>
   )
 }
