@@ -23,8 +23,8 @@ export function EditControls({students, seat, editedSeat, setEditedSeat}: EditCo
     // check duplicate students
     const editedSeatStudentNumbers = new Set<number>()
 
-    for (let row of editedSeat) {
-      for (let student of row) {
+    for (const row of editedSeat) {
+      for (const student of row) {
         if (student !== null) {
           if (editedSeatStudentNumbers.has(student.number)) {
             console.log(editedSeatStudentNumbers, student.number)
@@ -39,10 +39,10 @@ export function EditControls({students, seat, editedSeat, setEditedSeat}: EditCo
 
     // check missing students
     const studentNumbers = new Set<number>()
-    for (let student of students) {
+    for (const student of students) {
       studentNumbers.add(student.number)
     }
-    for (let studentNumber of studentNumbers) {
+    for (const studentNumber of studentNumbers) {
       if (!editedSeatStudentNumbers.has(studentNumber)) {
         toast.error("누락된 학생이 있어 저장되지 않았습니다.")
         stop()
