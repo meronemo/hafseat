@@ -65,6 +65,17 @@ export function GeneralSettings({
               <label htmlFor="rows" className="text-sm text-muted-foreground whitespace-nowrap">
                 행 (가로)
               </label>
+              <Select value={String(rowsState)} onValueChange={(value) => setRows(Number(value))}>
+                <SelectTrigger className="shadow-none">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="3">3</SelectItem>
+                  <SelectItem value="4">4</SelectItem>
+                  <SelectItem value="5">5</SelectItem>
+                </SelectContent>
+              </Select>
+              {/* 
               <Input
                 id="rows"
                 type="number"
@@ -72,6 +83,7 @@ export function GeneralSettings({
                 onChange={(e) => setRows(Number(e.target.value))}
                 className="w-14"
               />
+              */}
             </div>
             <div className="flex items-center gap-2">
               <label htmlFor="cols" className="text-sm text-muted-foreground whitespace-nowrap">
@@ -81,8 +93,9 @@ export function GeneralSettings({
                 id="cols"
                 type="number"
                 defaultValue={columns}
-                onChange={(e) => setColumns(Number(e.target.value))}
+                onChange={undefined} // (e) => setColumns(Number(e.target.value))
                 className="w-14"
+                disabled={true}
               />
             </div>
           </div>
