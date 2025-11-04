@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { getServerSideSession } from "@/lib/session"
-import { viewSeat } from "@/services/view-seat"
+import { viewSeat } from "@/services/seat/view"
 import { getGeneralSettings } from "@/services/settings/general"
 import { getStudentsSettings } from "@/services/settings/students"
 import HomePage from "@/components/HomePage/index"

@@ -1,17 +1,65 @@
 "use client"
 
+import { Dispatch, SetStateAction } from "react"
 import { Student } from "@/types/settings"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+
+interface StudentSelectProps {
+  editedSeat: (Student | null)[][]
+  onChange: (row: number, col: number, studentNumber: number) => void
+  row: number
+  col: number
+  students: Student[]
+}
+
+function StudentSelect({ editedSeat, onChange, row, col, students }: StudentSelectProps) {
+  const thisStudent = editedSeat[row][col]
+  return (
+    <Select
+      value={thisStudent ? String(thisStudent.number) : "0"}
+      onValueChange={(value) => onChange(row, col, Number(value))}
+    >
+      <SelectTrigger className="shadow-none">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="0" key="0">빈자리</SelectItem>
+        {students.map((student) => (
+          <SelectItem value={String(student.number)} key={student.number}>
+            {student.number}. {student.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  )
+}
 
 interface EditSeatGridProps {
-  seat: (Student | null)[][]
+  editedSeat: (Student | null)[][]
+  setEditedSeat: Dispatch<SetStateAction<(Student | null)[][]>>
+  students: Student[]
   cols: number
 }
 
-export function EditSeatGrid({ seat, cols }: EditSeatGridProps) {
+export function EditSeatGrid({ editedSeat, setEditedSeat, students, cols }: EditSeatGridProps) {
+  const handleChange = (row: number, col: number, studentNumber: number) => {
+    setEditedSeat(prevSeat => {
+      const newSeat = [...prevSeat]
+      const newRow = [...newSeat[row]]
+      if (studentNumber === 0) {
+        newRow[col] = null
+      } else {
+        newRow[col] = students.find(s => s.number === studentNumber) || null
+      }
+      newSeat[row] = newRow
+      return newSeat
+    })
+  }
+
   return (
     <div className="flex justify-center print-bg">
       <div className="flex flex-col gap-4">
-        {seat.map((row, rowIndex) => (
+        {editedSeat.map((row, rowIndex) => (
           <div key={rowIndex} className="flex">
             {row.map((student, colIndex) => (
               <div
@@ -28,19 +76,13 @@ export function EditSeatGrid({ seat, cols }: EditSeatGridProps) {
                   ${colIndex % 2 === 1 && colIndex < cols - 1 ? "mr-8" : "mr-2"}
                 `}
               >
-              {student ? (
-                <>
-                  <div className="absolute top-2 left-2 w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm font-semibold flex items-center justify-center">
-                    {student.number}
-                  </div>
-
-                  <p className="text-xl font-bold text-center px-2">
-                    {student.name}
-                  </p>
-                </>
-              ) : (
-                <p className="text-sm text-muted-foreground">빈자리</p>
-              )}
+                <StudentSelect
+                  editedSeat={editedSeat}
+                  onChange={handleChange}
+                  row={rowIndex}
+                  col={colIndex}
+                  students={students}
+                />
               </div>
             ))}
           </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from "react"
+import { useState, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Student } from "@/types/settings"
 import { EditSeatGrid } from "./EditSeatGrid"
@@ -10,6 +10,7 @@ import { EditControls } from "./EditControls"
 
 interface EditSeatProps {
   seat: (Student | null)[][]
+  students: Student[]
   grade: number
   cls: string
   cols: number
@@ -17,11 +18,13 @@ interface EditSeatProps {
 
 export default function EditSeat({
   seat,
+  students,
   grade,
   cls,
   cols
 }: EditSeatProps) {
   const contentRef = useRef<HTMLDivElement>(null)
+  const [editedSeat, setEditedSeat] = useState<(Student | null)[][]>(seat)
   
   return (
     <div className=" bg-background p-8">
@@ -30,7 +33,7 @@ export default function EditSeat({
         <div className="flex items-center justify-between">
           <BackButton />
           <div className="flex items-center gap-4">
-            <EditControls />
+            <EditControls seat={seat} editedSeat={editedSeat} setEditedSeat={setEditedSeat} />
           </div>
           <div className="w-24"></div>
         </div>
@@ -44,7 +47,7 @@ export default function EditSeat({
             
             <CardContent className="pt-4 pb-4">
               <TeacherDesk viewMode="student"/>
-              <EditSeatGrid seat={seat} cols={cols} />
+              <EditSeatGrid editedSeat={editedSeat} setEditedSeat={setEditedSeat} students={students} cols={cols} />
             </CardContent>
 
             <div className="text-center mt-6">

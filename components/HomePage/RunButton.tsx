@@ -19,7 +19,7 @@ export function RunButton({ session, disabled = false }: RunButtonProps) {
 
   const handleRun = async () => {
     setIsRunning(true)
-    const res = await fetch("/api/randomize-seat", {
+    const res = await fetch("/api/seat/randomize", {
       method: "POST"
     })
     

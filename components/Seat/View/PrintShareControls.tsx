@@ -42,7 +42,6 @@ export function PrintShareControls({contentRef, grade, cls, date}: PrintShareCon
 
     const scaleX = parentWidth / elWidth
     const scaleY = parentHeight / elHeight
-    console.log(elWidth, elHeight, scaleX, scaleY)
     const scale = Math.min(scaleX, scaleY, 1)
     el.style.setProperty('--scale', scale.toString())
     reactToPrintFn()

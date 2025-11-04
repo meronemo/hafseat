@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { getServerSideSession } from "@/lib/session"
-import { viewSeat } from "@/services/view-seat"
+import { viewSeat } from "@/services/seat/view"
 import ViewSeat from "@/components/Seat/View/index"
 
 export default async function Page() {
