@@ -8,30 +8,45 @@ import { toast } from "sonner"
 import { useProgress } from "@bprogress/next"
 
 interface EditControlsProps {
+  students: Student[]
   seat: (Student | null)[][]
   editedSeat: (Student | null)[][]
   setEditedSeat: Dispatch<SetStateAction<(Student | null)[][]>>
 }
 
-export function EditControls({seat, editedSeat, setEditedSeat}: EditControlsProps) {
+export function EditControls({students, seat, editedSeat, setEditedSeat}: EditControlsProps) {
   const { start, stop } = useProgress()
 
   const handleSave = async () => {
     start()
 
     // check duplicate students
-    const studentNumbers = new Set<number>()
+    const editedSeatStudentNumbers = new Set<number>()
+
     for (let row of editedSeat) {
       for (let student of row) {
         if (student !== null) {
-          if (studentNumbers.has(student.number)) {
-            console.log(studentNumbers, student.number)
+          if (editedSeatStudentNumbers.has(student.number)) {
+            console.log(editedSeatStudentNumbers, student.number)
             toast.error("중복되는 학생이 있어 저장되지 않았습니다.")
             stop()
             return
           }
-          studentNumbers.add(student.number)
+          editedSeatStudentNumbers.add(student.number)
         }
+      }
+    }
+
+    // check missing students
+    const studentNumbers = new Set<number>()
+    for (let student of students) {
+      studentNumbers.add(student.number)
+    }
+    for (let studentNumber of studentNumbers) {
+      if (!editedSeatStudentNumbers.has(studentNumber)) {
+        toast.error("누락된 학생이 있어 저장되지 않았습니다.")
+        stop()
+        return
       }
     }
 

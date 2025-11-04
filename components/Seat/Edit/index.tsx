@@ -40,7 +40,7 @@ export default function EditSeat({
         <div className="flex items-center justify-between">
           <BackButton />
           <div className="flex items-center gap-4">
-            <EditControls seat={seat} editedSeat={editedSeat} setEditedSeat={setEditedSeat} />
+            <EditControls students={students} seat={seat} editedSeat={editedSeat} setEditedSeat={setEditedSeat} />
           </div>
           <div className="w-24"></div>
         </div>
