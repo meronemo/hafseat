@@ -5,7 +5,6 @@ import { UserArea } from "@/components/HomePage/UserArea"
 import { RunButton } from "@/components/HomePage/RunButton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircleIcon } from "lucide-react"
-import { EditSeatButton } from "./UserArea/EditSeatButton"
 
 export default function HomePage({ sessionData, data }: HomeProps) {
   const { seatCount=0, studentCount=0, isSeatNull=true, settingsChanged=false } = data || {}

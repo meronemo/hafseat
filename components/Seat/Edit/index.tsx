@@ -11,20 +11,27 @@ import { EditControls } from "./EditControls"
 interface EditSeatProps {
   seat: (Student | null)[][]
   students: Student[]
+  needFresh: boolean
   grade: number
   cls: string
+  rows: number
   cols: number
 }
 
 export default function EditSeat({
   seat,
   students,
+  needFresh,
   grade,
   cls,
+  rows,
   cols
 }: EditSeatProps) {
   const contentRef = useRef<HTMLDivElement>(null)
-  const [editedSeat, setEditedSeat] = useState<(Student | null)[][]>(seat)
+  const initialSeat = needFresh 
+    ? Array(rows).fill(null).map(() => Array(cols).fill(null))
+    : seat
+  const [editedSeat, setEditedSeat] = useState<(Student | null)[][]>(initialSeat)
   
   return (
     <div className=" bg-background p-8">
