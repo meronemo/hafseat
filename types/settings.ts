@@ -26,7 +26,7 @@ export const defaultSettings: Settings = {
   columns: 8,
   avoidSameSeat: true,
   avoidSamePartner: true,
-  avoidUnfavorableSeat: 'none',
+  avoidUnfavorableSeat: 'any',
   changed: false
 }
 
