@@ -1,10 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { Settings } from "@/types/settings"
-import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
-import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -12,8 +9,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { toast } from "sonner"
-import { Loader2 } from "lucide-react"
+
+interface GeneralSettingsProps {
+  rows: number
+  columns: number
+  avoidSameSeat: boolean
+  avoidSamePartner: boolean
+  avoidUnfavorableSeat: "none" | "back" | "side" | "both" | "any"
+  onRowsChange: (value: number) => void
+  onColumnsChange: (value: number) => void
+  onAvoidSameSeatChange: (value: boolean) => void
+  onAvoidSamePartnerChange: (value: boolean) => void
+  onAvoidUnfavorableSeatChange: (value: "none" | "back" | "side" | "both" | "any") => void
+}
 
 export function GeneralSettings({
   rows,
@@ -21,36 +29,12 @@ export function GeneralSettings({
   avoidSameSeat,
   avoidSamePartner,
   avoidUnfavorableSeat,
-}: Settings) {
-  const [rowsState, setRows] = useState(rows)
-  const [columnsState, setColumns] = useState(columns)
-  const [avoidSameSeatState, setAvoidSameSeat] = useState(avoidSameSeat)
-  const [avoidSamePartnerState, setAvoidSamePartner] = useState(avoidSamePartner)
-  const [avoidUnfavorableSeatState, setAvoidUnfavorableSeat] = useState(avoidUnfavorableSeat)
-  const [saveLoading, setSaveLoading] = useState(false)
-
-  const handleSave = async () => {
-    setSaveLoading(true)
-    const res = await fetch("/api/settings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        rows: rowsState,
-        columns: columnsState,
-        avoidSameSeat: avoidSameSeatState,
-        avoidSamePartner: avoidSamePartnerState,
-        avoidUnfavorableSeat: avoidUnfavorableSeatState
-      }),
-    })
-    setSaveLoading(false)
-
-    if (res.ok) {
-      toast.success("설정이 저장되었습니다.")
-    } else {
-      const data = await res.json()
-      console.log(data.error)
-    }
-  }
+  onRowsChange,
+  onColumnsChange,
+  onAvoidSameSeatChange,
+  onAvoidSamePartnerChange,
+  onAvoidUnfavorableSeatChange,
+}: GeneralSettingsProps) {
 
   return (
     <div>
@@ -65,7 +49,7 @@ export function GeneralSettings({
               <label htmlFor="rows" className="text-sm text-muted-foreground whitespace-nowrap">
                 행 (가로)
               </label>
-              <Select value={String(rowsState)} onValueChange={(value) => setRows(Number(value))}>
+              <Select value={String(rows)} onValueChange={(value) => onRowsChange(Number(value))}>
                 <SelectTrigger className="shadow-none">
                   <SelectValue />
                 </SelectTrigger>
@@ -75,15 +59,6 @@ export function GeneralSettings({
                   <SelectItem value="5">5</SelectItem>
                 </SelectContent>
               </Select>
-              {/* 
-              <Input
-                id="rows"
-                type="number"
-                defaultValue={rows}
-                onChange={(e) => setRows(Number(e.target.value))}
-                className="w-14"
-              />
-              */}
             </div>
             <div className="flex items-center gap-2">
               <label htmlFor="cols" className="text-sm text-muted-foreground whitespace-nowrap">
@@ -92,8 +67,8 @@ export function GeneralSettings({
               <Input
                 id="cols"
                 type="number"
-                defaultValue={columns}
-                onChange={undefined} // (e) => setColumns(Number(e.target.value))
+                value={columns}
+                onChange={undefined}
                 className="w-14"
                 disabled={true}
               />
@@ -116,7 +91,7 @@ export function GeneralSettings({
                 이전에 앉았던 자리에 다시 앉지 않도록 합니다.
               </p>
             </div>
-            <Switch id="avoid-same-seat" checked={avoidSameSeatState} onCheckedChange={setAvoidSameSeat} />
+            <Switch id="avoid-same-seat" checked={avoidSameSeat} onCheckedChange={onAvoidSameSeatChange} />
           </div>
   
           <div className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/5 transition-colors">
@@ -128,7 +103,7 @@ export function GeneralSettings({
                 이전에 짝이었던 학생과 다시 짝이 되지 않도록 합니다.
               </p>
             </div>
-            <Switch id="avoid-same-partner" checked={avoidSamePartnerState} onCheckedChange={setAvoidSamePartner} />
+            <Switch id="avoid-same-partner" checked={avoidSamePartner} onCheckedChange={onAvoidSamePartnerChange} />
           </div>
 
           <div className="items-center justify-between p-4 space-y-4 rounded-lg border bg-card hover:bg-accent/5 transition-colors">
@@ -141,9 +116,9 @@ export function GeneralSettings({
               </p>
             </div>
             <Select
-              value={avoidUnfavorableSeatState}
+              value={avoidUnfavorableSeat}
               onValueChange={(value: string) =>
-                setAvoidUnfavorableSeat(value as "none" | "back" | "side" | "both" | "any")
+                onAvoidUnfavorableSeatChange(value as "none" | "back" | "side" | "both" | "any")
               }
             >
               <SelectTrigger className="w-full">
@@ -170,17 +145,6 @@ export function GeneralSettings({
               </SelectContent>
             </Select>
           </div>
-        </div>
-
-        <div className="space-y-2">
-          <Button
-            size="lg"
-            onClick={handleSave}
-            disabled={saveLoading}
-            className="px-6"
-          >
-            {saveLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "저장"}
-          </Button>
         </div>
       </div>
     </div>

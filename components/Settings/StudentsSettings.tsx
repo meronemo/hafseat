@@ -1,22 +1,20 @@
 "use client"
 
-import { useState, useRef, type ChangeEvent } from "react"
+import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { toast } from "sonner"
-import { Plus, Trash2, Loader2 } from "lucide-react"
+import { Plus, Trash2 } from "lucide-react"
 import { Student } from "@/types/settings"
 
 interface StudentsSettingsProps {
   students: Student[]
+  onStudentsChange: (students: Student[]) => void
 }
 
-export function StudentsSettings({ students }: StudentsSettingsProps) {
-  const [studentsState, setStudents] = useState<Student[]>(students)
+export function StudentsSettings({ students, onStudentsChange }: StudentsSettingsProps) {
   const [newStudentNumber, setNewStudentNumber] = useState("")
   const [newStudentName, setNewStudentName] = useState("")
   const [validationError, setValidationError] = useState("")
-  const [saveLoading, setSaveLoading] = useState(false)
   const numberInputRef = useRef<HTMLInputElement>(null)
 
   const addStudent = () => {
@@ -30,7 +28,7 @@ export function StudentsSettings({ students }: StudentsSettingsProps) {
       return
     }
 
-    if (studentsState.some(s => s.number === studentNumber)) {
+    if (students.some(s => s.number === studentNumber)) {
       setValidationError("이미 존재하는 번호입니다.")
       return
     }
@@ -44,13 +42,13 @@ export function StudentsSettings({ students }: StudentsSettingsProps) {
       isBack: null
     }
 
-    setStudents([...studentsState, newStudent].sort((a, b) => a.number - b.number))
+    onStudentsChange([...students, newStudent].sort((a, b) => a.number - b.number))
     setNewStudentNumber("")
     setNewStudentName("")
   }
 
   const deleteStudent = (number: number) => {
-    setStudents(studentsState.filter(s => s.number !== number))
+    onStudentsChange(students.filter(s => s.number !== number))
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -58,28 +56,6 @@ export function StudentsSettings({ students }: StudentsSettingsProps) {
       addStudent()
       numberInputRef.current?.focus()
     }
-  }
-
-  const handleSave = async () => {
-    setSaveLoading(true)
-
-    const res = await fetch("/api/settings/students", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(studentsState.map(s => ({
-        number: s.number,
-        name: s.name
-      }))),
-    })
-    setSaveLoading(false)
-    if (res.ok) {
-      toast.success("학생 정보가 저장되었습니다.")
-    } else {
-      const data = await res.json()
-      console.log(data.error)
-    }
-
-    return
   }
 
   return (
@@ -93,7 +69,7 @@ export function StudentsSettings({ students }: StudentsSettingsProps) {
             type="number"
             placeholder="번호"
             value={newStudentNumber}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => setNewStudentNumber(e.target.value)}
+            onChange={(e) => setNewStudentNumber(e.target.value)}
             onKeyDown={handleKeyDown}
             className="w-18 shadow-xs"
             min="1"
@@ -103,7 +79,7 @@ export function StudentsSettings({ students }: StudentsSettingsProps) {
             type="text"
             placeholder="이름"
             value={newStudentName}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => setNewStudentName(e.target.value)}
+            onChange={(e) => setNewStudentName(e.target.value)}
             onKeyDown={handleKeyDown}
             className="flex-1 shadow-xs"
           />
@@ -123,16 +99,16 @@ export function StudentsSettings({ students }: StudentsSettingsProps) {
       <div className="space-y-2">
         <div className="space-y-2">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-semibold">학생 목록 ({studentsState.length}명)</h3>
+            <h3 className="text-sm font-semibold">학생 목록 ({students.length}명)</h3>
           </div>
           
-          {studentsState.length === 0 ? (
+          {students.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <p className="text-sm">등록된 학생이 없습니다</p>
             </div>
           ) : (
             <div className="space-y-2">
-              {studentsState.map((student) => (
+              {students.map((student) => (
                 <div
                   key={student.number}
                   className="flex items-center justify-between bg-muted/30 rounded-lg px-4 py-3 hover:bg-muted/50 transition-colors"
@@ -155,17 +131,6 @@ export function StudentsSettings({ students }: StudentsSettingsProps) {
               ))}
             </div>
           )}
-        </div>
-  
-        <div className="space-y-2">
-          <Button
-            size="lg"
-            onClick={handleSave}
-            disabled={saveLoading}
-            className="px-6"
-          >
-            {saveLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "저장"}
-          </Button>
         </div>
       </div>
     </div>

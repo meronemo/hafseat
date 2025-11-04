@@ -12,8 +12,9 @@ import {
   CardContent,
 } from "@/components/ui/card"
 import { useRouter } from "@bprogress/next/app"
-import { ArrowLeft, User, Info } from "lucide-react"
+import { ArrowLeft, User, Info, Loader2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import { toast } from "sonner"
 
 interface SettingsProps {
   user: {
@@ -30,6 +31,60 @@ export default function Settings({ user, generalSettings, students }: SettingsPr
   const [activeTab, setActiveTab] = useState("general")
   const router = useRouter()
   const displayClass = user.grade && user.class ? `${user.grade}학년 ${user.class}반` : "학급 정보 없음"
+
+  // General settings state
+  const [rowsState, setRowsState] = useState(generalSettings.rows)
+  const [columnsState, setColumnsState] = useState(generalSettings.columns)
+  const [avoidSameSeatState, setAvoidSameSeatState] = useState(generalSettings.avoidSameSeat)
+  const [avoidSamePartnerState, setAvoidSamePartnerState] = useState(generalSettings.avoidSamePartner)
+  const [avoidUnfavorableSeatState, setAvoidUnfavorableSeatState] = useState(generalSettings.avoidUnfavorableSeat)
+
+  // Students state
+  const [studentsState, setStudentsState] = useState(students)
+
+  // Save loading state
+  const [saveLoading, setSaveLoading] = useState(false)
+
+  const handleSaveAll = async () => {
+    setSaveLoading(true)
+    
+    try {
+      // Save general settings
+      const generalRes = await fetch("/api/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          rows: rowsState,
+          columns: columnsState,
+          avoidSameSeat: avoidSameSeatState,
+          avoidSamePartner: avoidSamePartnerState,
+          avoidUnfavorableSeat: avoidUnfavorableSeatState
+        }),
+      })
+
+      // Save students
+      const studentsRes = await fetch("/api/settings/students", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: studentsState }),
+      })
+
+      if (generalRes.ok && studentsRes.ok) {
+        toast.success("모든 설정 변경사항이 저장되었습니다.")
+        router.refresh()
+      } else {
+        const generalData = await generalRes.json()
+        const studentsData = await studentsRes.json()
+        toast.error("설정 저장 중 오류가 발생했습니다.")
+        console.log(generalData.error, studentsData.error)
+      }
+    } catch (error) {
+      toast.error("설정 저장 중 오류가 발생했습니다.")
+      console.error(error)
+    } finally {
+      setSaveLoading(false)
+    }
+  }
 
   const tabs = [
     { id: "general", label: "일반", icon: Info },
@@ -111,12 +166,16 @@ export default function Settings({ user, generalSettings, students }: SettingsPr
                     transition={{ duration: 0.1, ease: "easeInOut" }}
                   >
                     <GeneralSettings 
-                      rows={generalSettings.rows}
-                      columns={generalSettings.columns}
-                      avoidSameSeat={generalSettings.avoidSameSeat}
-                      avoidSamePartner={generalSettings.avoidSamePartner}
-                      avoidUnfavorableSeat={generalSettings.avoidUnfavorableSeat}
-                      changed={generalSettings.changed}
+                      rows={rowsState}
+                      columns={columnsState}
+                      avoidSameSeat={avoidSameSeatState}
+                      avoidSamePartner={avoidSamePartnerState}
+                      avoidUnfavorableSeat={avoidUnfavorableSeatState}
+                      onRowsChange={setRowsState}
+                      onColumnsChange={setColumnsState}
+                      onAvoidSameSeatChange={setAvoidSameSeatState}
+                      onAvoidSamePartnerChange={setAvoidSamePartnerState}
+                      onAvoidUnfavorableSeatChange={setAvoidUnfavorableSeatState}
                     />
                   </motion.div>
                 )}
@@ -130,11 +189,31 @@ export default function Settings({ user, generalSettings, students }: SettingsPr
                     transition={{ duration: 0.1, ease: "easeInOut" }}
                   >
                     <StudentsSettings 
-                      students={students}
+                      students={studentsState}
+                      onStudentsChange={setStudentsState}
                     />
                   </motion.div>
                 )}
               </AnimatePresence>
+            </div>
+
+            {/* Save Button - Fixed at bottom */}
+            <div className="border-t pt-4">
+              <Button
+                size="lg"
+                onClick={handleSaveAll}
+                disabled={saveLoading}
+                className="w-full"
+              >
+                {saveLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    저장 중...
+                  </>
+                ) : (
+                  "모든 변경사항 저장"
+                )}
+              </Button>
             </div>
           </CardContent>
         </Card>

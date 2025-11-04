@@ -36,7 +36,7 @@ export async function writeStudentsSettings(session: Session, req: Request) {
     .schema("next_auth")
     .from("classes")
     .update({students: {
-      data: body,
+      data: body.data,
       changed: changed
     }})
     .eq("id", userClassId)
