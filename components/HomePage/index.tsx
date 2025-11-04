@@ -1,6 +1,8 @@
 "use client"
 
+import { useEffect } from "react"
 import { HomeProps } from "@/app/page"
+import { useRouter } from "@bprogress/next/app"
 import { UserArea } from "@/components/HomePage/UserArea"
 import { RunButton } from "@/components/HomePage/RunButton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -9,6 +11,22 @@ import { AlertCircleIcon } from "lucide-react"
 export default function HomePage({ sessionData, data }: HomeProps) {
   const { seatCount=0, studentCount=0, isSeatNull=true, settingsChanged=false } = data || {}
   
+  const router = useRouter()
+  useEffect(() => {
+    // detect browser page back/forward
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        router.refresh()
+      }
+    }
+
+    window.addEventListener("pageshow", handlePageShow)
+
+    return () => {
+      window.removeEventListener("pageshow", handlePageShow)
+    }
+  }, [router])
+
   return (
     <main className="min-h-screen flex flex-col p-6">
       <div className="flex-1 flex items-center justify-center">

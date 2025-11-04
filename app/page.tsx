@@ -26,7 +26,7 @@ export default async function Page() {
   }
   if (!session.user.classId) {
     redirect("/confirm-representative")
-  }
+  }  
 
   const [seatData, generalSettingsData, studentsSettingsData] = await Promise.all([
     viewSeat(session),
