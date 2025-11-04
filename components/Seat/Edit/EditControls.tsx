@@ -18,6 +18,23 @@ export function EditControls({seat, editedSeat, setEditedSeat}: EditControlsProp
 
   const handleSave = async () => {
     start()
+
+    // check duplicate students
+    const studentNumbers = new Set<number>()
+    for (let row of editedSeat) {
+      for (let student of row) {
+        if (student !== null) {
+          if (studentNumbers.has(student.number)) {
+            console.log(studentNumbers, student.number)
+            toast.error("중복되는 학생이 있어 저장되지 않았습니다.")
+            stop()
+            return
+          }
+          studentNumbers.add(student.number)
+        }
+      }
+    }
+
     const res = await fetch("/api/seat/edit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

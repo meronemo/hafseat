@@ -79,27 +79,27 @@ async function makeNewSeat(
       // find suitable seat with rules applied
       let idx = 0
 
-      if (avoidUnfavorableSeat == "any" && (thisStudent.isBack || thisStudent.isSide)) {
+      if (avoidUnfavorableSeat == "any" && (thisStudent?.isBack || thisStudent?.isSide)) {
         while (seatPool[idx][0] == rows-1 || seatPool[idx][1] == 0 || seatPool[idx][1] == cols-1) {
           idx++
         }
       } else {
         if (avoidUnfavorableSeat == "both") {
-          if (thisStudent.isBack) {
+          if (thisStudent?.isBack) {
             while (seatPool[idx][0] == rows-1) {
               idx++
             }    
           }
-          if (thisStudent.isSide) {
+          if (thisStudent?.isSide) {
             while (seatPool[idx][1] == 0 || seatPool[idx][1] == cols-1) {
               idx++
             }
           }
-        } else if (avoidUnfavorableSeat == "back" && thisStudent.isBack) {
+        } else if (avoidUnfavorableSeat == "back" && thisStudent?.isBack) {
           while (seatPool[idx][0] == rows-1) {
             idx++
           }
-        } else if (avoidUnfavorableSeat == "side" && thisStudent.isSide) {
+        } else if (avoidUnfavorableSeat == "side" && thisStudent?.isSide) {
           while (seatPool[idx][1] == 0 || seatPool[idx][1] == cols-1) {
             idx++
           }
