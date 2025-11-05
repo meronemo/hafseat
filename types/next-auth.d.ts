@@ -11,6 +11,7 @@ declare module "next-auth" {
       classId?: string | null
       grade?: number | null
       class?: string | null
+      role?: string | null
     }
   }
 }

@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { HomeProps } from "@/app/page"
 import { useRouter } from "@bprogress/next/app"
 import { UserArea } from "@/components/HomePage/UserArea"
 import { RunButton } from "@/components/HomePage/RunButton"
@@ -9,12 +8,25 @@ import { AnnouncementDialog } from "@/components/HomePage/AnnouncementDialog"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircleIcon, Bell } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { type Session } from "next-auth"
+
+export interface HomeProps {
+  sessionData: Session | null
+  data?: {
+    isAdmin: boolean
+    seatCount: number
+    studentCount: number
+    isSeatNull: boolean
+    settingsChanged: boolean
+    readAnnouncements: boolean
+  }
+}
 
 export default function HomePage({ sessionData, data }: HomeProps) {
-  const { seatCount=0, studentCount=0, isSeatNull=true, settingsChanged=false, readNotifications=false } = data || {}
+  const { isAdmin=false, seatCount=0, studentCount=0, isSeatNull=true, settingsChanged=false, readAnnouncements: readAnnouncements=true } = data || {}
   
   const [isAnnouncementOpen, setIsAnnouncementOpen] = useState(false)
-  const [isReadNotifications, setIsReadNotifications] = useState(readNotifications)
+  const [isReadAnnouncements, setIsReadAnnouncements] = useState(readAnnouncements)
   
   const router = useRouter()
   useEffect(() => {
@@ -50,8 +62,8 @@ export default function HomePage({ sessionData, data }: HomeProps) {
               className="group relative hover:bg-accent"
               onClick={() => {
                 setIsAnnouncementOpen(true)
-                setIsReadNotifications(true)
-                fetch("/api/read-notifications", {
+                setIsReadAnnouncements(true)
+                fetch("/api/announcements/read", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({ "data": true })
@@ -60,7 +72,7 @@ export default function HomePage({ sessionData, data }: HomeProps) {
             >
               <Bell className="w-4 h-4 mr-2" />
               공지사항
-              {!isReadNotifications && (
+              {!isReadAnnouncements && (
                 <span className="absolute top-0 right-0 h-2 w-2 bg-destructive rounded-full"></span>
               )}
             </Button>
@@ -136,6 +148,7 @@ export default function HomePage({ sessionData, data }: HomeProps) {
 
       {/* Announcement Dialog */}
       <AnnouncementDialog 
+        isAdmin={isAdmin}
         open={isAnnouncementOpen} 
         onOpenChange={setIsAnnouncementOpen} 
       />

@@ -32,7 +32,7 @@ export const authOptions: NextAuthOptions = {
           const { data, error } = await supabase
             .schema("next_auth")
             .from("users")
-            .select("classId, grade, class, name")
+            .select("classId, grade, class, name, role")
             .eq("email", session.user.email)
             .single()
           
@@ -43,6 +43,7 @@ export const authOptions: NextAuthOptions = {
             session.user.classId = data.classId
             session.user.grade = data.grade
             session.user.class = data.class
+            session.user.role = data.role
           }
         }
       } catch (e) {
