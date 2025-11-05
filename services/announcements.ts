@@ -47,11 +47,18 @@ export async function writeAnnouncements(req: Request) {
   const now = new Date(new Date().toLocaleString("en-US", { timeZone }))
   const dateString = `${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일`
 
-  const { error } = await supabase
+  const { error: e1 } = await supabase
     .schema("next_auth")
     .from("announcements")
     .insert({title: body.title, content: body.content, date: dateString })
+  if (e1) throw new Error(e1.message)
 
-  if (error) throw new Error(error.message)
+  const { error: e2 } = await supabase
+    .schema("next_auth")
+    .from("users")
+    .update({ read_announcements: false })
+    .eq('read_announcements', true) // to show new announcement badge to users
+  if (e2) throw new Error(e2.message)
+    
   return { ok: true }
 }
