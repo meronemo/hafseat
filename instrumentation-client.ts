@@ -31,7 +31,7 @@ Sentry.init({
       emailPlaceholder: "example@hafs.hs.kr",
       isRequiredLabel: "(필수)",
       messageLabel: "설명",
-      messagePlaceholder: "어떤 오류인가요? 어떤 상황에서 발생한 것인지 구체적으로 적어주세요.",
+      messagePlaceholder: "어떤 오류인가요? 어떤 상황에서 발생한 것인지 구체적으로 적어주실수록 도움이 됩니다.",
       successMessageText: "제보해주셔서 감사합니다!",
       highlightToolText: "강조하기",
       hideToolText: "가리기",

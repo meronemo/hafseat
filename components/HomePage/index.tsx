@@ -5,8 +5,9 @@ import { useRouter } from "@bprogress/next/app"
 import { UserArea } from "@/components/HomePage/UserArea"
 import { RunButton } from "@/components/HomePage/RunButton"
 import { AnnouncementDialog } from "@/components/HomePage/AnnouncementDialog"
+import { FeedbackDialog } from "@/components/HomePage/FeedbackDialog"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertCircleIcon, Bell } from "lucide-react"
+import { AlertCircleIcon, Bell, MessageCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { type Session } from "next-auth"
 
@@ -27,6 +28,7 @@ export default function HomePage({ sessionData, data }: HomeProps) {
   
   const [isAnnouncementOpen, setIsAnnouncementOpen] = useState(false)
   const [isReadAnnouncements, setIsReadAnnouncements] = useState(readAnnouncements)
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
   
   const router = useRouter()
   useEffect(() => {
@@ -57,25 +59,36 @@ export default function HomePage({ sessionData, data }: HomeProps) {
             </div>
             <p className=" text-muted-foreground">공정하고 간편한 자리 배치</p>
 
-            <Button
-              variant="outline"
-              className="group relative hover:bg-accent"
-              onClick={() => {
-                setIsAnnouncementOpen(true)
-                setIsReadAnnouncements(true)
-                fetch("/api/announcements/read", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ "data": true })
-                })
-              }}
-            >
-              <Bell className="w-4 h-4 mr-2" />
-              공지사항
-              {!isReadAnnouncements && (
-                <span className="absolute top-0 right-0 h-2 w-2 bg-destructive rounded-full"></span>
-              )}
-            </Button>
+            <div className="flex justify-center items-center gap-3">
+              <Button
+                variant="outline"
+                className="group relative hover:bg-accent"
+                onClick={() => {
+                  setIsAnnouncementOpen(true)
+                  setIsReadAnnouncements(true)
+                  fetch("/api/announcements/read", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ "data": true })
+                  })
+                }}
+              >
+                <Bell className="w-4 h-4 mr-2" />
+                공지사항
+                {!isReadAnnouncements && (
+                  <span className="absolute top-0 right-0 h-2 w-2 bg-destructive rounded-full"></span>
+                )}
+              </Button>
+
+              <Button
+                variant="outline"
+                className="group relative hover:bg-accent"
+                onClick={() => { setIsFeedbackOpen(true) }}
+              >
+                <MessageCircle className="w-4 h-4 mr-2" />
+                의견 보내기
+              </Button>
+            </div>
           </div>
   
           <div className="text-center space-y-8 w-full">
@@ -144,13 +157,20 @@ export default function HomePage({ sessionData, data }: HomeProps) {
         <p className="text-sm text-muted-foreground">
           Made by <span className="font-medium text-foreground">10630최시원</span>
         </p>
+        <p className="text-xs text-muted-foreground">021325@hafs.hs.kr</p>
       </footer>
 
-      {/* Announcement Dialog */}
       <AnnouncementDialog 
         isAdmin={isAdmin}
         open={isAnnouncementOpen} 
         onOpenChange={setIsAnnouncementOpen} 
+      />
+
+      <FeedbackDialog 
+        userName={sessionData?.user.name}
+        userEmail={sessionData?.user.email}
+        open={isFeedbackOpen}
+        onOpenChange={setIsFeedbackOpen} 
       />
     </main>
   )
