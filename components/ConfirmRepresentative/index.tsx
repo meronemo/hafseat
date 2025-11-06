@@ -49,18 +49,8 @@ export default function ConfirmRepresentative({
         return
       }
 
-      // Initialize class settings data
-      const res2 = await fetch("/api/settings/init", {
-        method: "POST"
-      })
-
-      if (res2.ok) {
-        router.push("/")
-      } else {
-        const data = await res2.json()
-        console.error(data.error)
-        setIsLoading(false)
-      }
+      router.push("/")
+      return
     } catch (error) {
       console.error(error)
       setIsLoading(false)

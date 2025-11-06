@@ -7,7 +7,7 @@ import { RunButton } from "@/components/HomePage/RunButton"
 import { AnnouncementDialog } from "@/components/HomePage/AnnouncementDialog"
 import { FeedbackDialog } from "@/components/HomePage/FeedbackDialog"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertCircleIcon, Bell, MessageCircle } from "lucide-react"
+import { AlertCircleIcon, Bell, MessageCircle, ShieldUser } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { type Session } from "next-auth"
 
@@ -52,7 +52,10 @@ export default function HomePage({ sessionData, data }: HomeProps) {
         <div className="w-full max-w-2xl mx-auto space-y-8">
           <div className="text-center space-y-3">
             <div className="relative inline-block">
-              <h1 className="text-5xl md:text-6xl font-bold text-balance tracking-tight">HAFSSeat</h1>
+              <h1 className="text-5xl md:text-6xl font-bold tracking-tight">
+                <span className="bg-linear-to-r from-foreground to-secondary-foreground bg-clip-text text-transparent">HAF</span>
+                <span className="bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">Seat</span>
+              </h1>
               <span className="absolute -top-2 -right-12 md:-right-14 text-xs font-semibold px-2 py-0.5 bg-primary text-primary-foreground rounded-full">
                 Beta
               </span>
@@ -88,6 +91,17 @@ export default function HomePage({ sessionData, data }: HomeProps) {
                 <MessageCircle className="w-4 h-4 mr-2" />
                 의견 보내기
               </Button>
+
+              {isAdmin && (
+                <Button
+                variant="outline"
+                className="group relative hover:bg-accent"
+                onClick={() => { router.push("/admin") }}
+              >
+                <ShieldUser className="w-4 h-4 mr-2" />
+                관리자
+              </Button>
+              )}
             </div>
           </div>
   
@@ -126,7 +140,7 @@ export default function HomePage({ sessionData, data }: HomeProps) {
                       첫 자리배치 시에는 규칙이 적용되지 않습니다.
                     </AlertTitle>
                     <AlertDescription>
-                      현재 자리 배치를 직접 입력하여 규칙을 적용할 수 있습니다.
+                      현재 자리 수정을 통해 자리 배치를 직접 입력하여 규칙을 적용할 수 있습니다.
                     </AlertDescription>
                   </Alert>
                 ) : settingsChanged ? (
@@ -136,7 +150,7 @@ export default function HomePage({ sessionData, data }: HomeProps) {
                       자리 구조 또는 학생 설정이 변경되어 다음 자리배치 시 규칙이 적용되지 않습니다.
                     </AlertTitle>
                     <AlertDescription>
-                      변경된 설정에 맞는 자리 배치를 직접 입력하여 규칙을 적용할 수 있습니다.
+                      현재 자리 수정을 통해 변경된 설정에 맞는 자리 배치를 직접 입력하여 규칙을 적용할 수 있습니다.
                     </AlertDescription>
                   </Alert>
                 ) : null}
