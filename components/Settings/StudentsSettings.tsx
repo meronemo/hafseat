@@ -23,8 +23,8 @@ export function StudentsSettings({ students, onStudentsChange }: StudentsSetting
     const studentNumber = parseInt(newStudentNumber)
     if (isNaN(studentNumber)) return
 
-    if (studentNumber < 1 || studentNumber > 35) {
-      setValidationError("번호는 1과 35 사이여야 합니다.")
+    if (studentNumber < 1 || studentNumber > 65) {
+      setValidationError("번호는 1과 65 사이여야 합니다.")
       return
     }
 
