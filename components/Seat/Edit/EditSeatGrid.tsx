@@ -1,36 +1,70 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Dispatch, SetStateAction } from "react"
 import { Student } from "@/types/settings"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { Button } from "@/components/ui/button"
 
 interface StudentSelectProps {
   editedSeat: (Student | null)[][]
   onChange: (row: number, col: number, studentNumber: number) => void
   row: number
   col: number
-  students: Student[]
+  studentsOption: ({value: string; label: string; num: number;})[]
 }
 
-function StudentSelect({ editedSeat, onChange, row, col, students }: StudentSelectProps) {
+function StudentSelect({ editedSeat, onChange, row, col, studentsOption }: StudentSelectProps) {
   const thisStudent = editedSeat[row][col]
+  const thisStudentDisplay = thisStudent ? `${thisStudent.number}. ${thisStudent.name}` : "빈자리"
+  
+  const [open, setOpen] = useState(false)
+  const [value, setValue] = useState(thisStudentDisplay)
+
+  useEffect(() => {
+    setValue(thisStudentDisplay)
+  }, [thisStudentDisplay])
+
   return (
-    <Select
-      value={thisStudent ? String(thisStudent.number) : "0"}
-      onValueChange={(value) => onChange(row, col, Number(value))}
-    >
-      <SelectTrigger className="shadow-none">
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="0" key="0">빈자리</SelectItem>
-        {students.map((student) => (
-          <SelectItem value={String(student.number)} key={student.number}>
-            {student.number}. {student.name}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="justify-between"
+        >
+          {value
+            ? studentsOption.find((student) => student.value === value)?.label
+            : "선택"
+          }
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent>
+        <Command>
+          <CommandInput placeholder="학생 검색" />
+          <CommandList>
+            <CommandEmpty>검색 결과 없음</CommandEmpty>
+            <CommandGroup>
+              {studentsOption.map((student) => (
+                <CommandItem
+                  key={student.value}
+                  value={student.value}
+                  onSelect={(currentValue) => {
+                    setValue(currentValue)
+                    onChange(row, col, student.num)
+                    setOpen(false)
+                  }}
+                >
+                  {student.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   )
 }
 
@@ -42,6 +76,12 @@ interface EditSeatGridProps {
 }
 
 export function EditSeatGrid({ editedSeat, setEditedSeat, students, cols }: EditSeatGridProps) {
+  const studentsOption = [{ value: "빈자리", label: "빈자리", num: 0 }]
+  students.map((student) => {
+    const display = `${student.number}. ${student.name}`
+    studentsOption.push({ value: display, label: display, num: student.number })
+  })
+
   const handleChange = (row: number, col: number, studentNumber: number) => {
     setEditedSeat(prevSeat => {
       const newSeat = [...prevSeat]
@@ -81,7 +121,7 @@ export function EditSeatGrid({ editedSeat, setEditedSeat, students, cols }: Edit
                   onChange={handleChange}
                   row={rowIndex}
                   col={colIndex}
-                  students={students}
+                  studentsOption={studentsOption}
                 />
               </div>
             ))}
