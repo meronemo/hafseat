@@ -8,6 +8,7 @@ import { TeacherDesk } from "../TeacherDesk"
 import { BackButton } from "../BackButton"
 import { ViewModeToggle } from "./ViewModeToggle"
 import { PrintShareControls } from "./PrintShareControls"
+import { Rating } from "./Rating"
 
 interface ViewSeatProps {
   seat: (Student | null)[][]
@@ -33,13 +34,17 @@ export default function ViewSeat({
     <div className=" bg-background p-8">
       <div className="min-h-screen max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <BackButton />
-          <div className="flex items-center gap-4">
+        <div className="grid grid-cols-3 items-center">
+          <div className="flex justify-start">
+            <BackButton />
+          </div>
+          <div className="flex items-center justify-center gap-4">
             <ViewModeToggle mode={viewMode} onChange={setViewMode} />
             <PrintShareControls contentRef={contentRef} grade={grade} cls={cls} date={date} />
           </div>
-          <div className="w-24"></div>
+          <div className="flex justify-end">
+            <Rating />
+          </div>
         </div>
 
         {/* Seat View Card*/}
@@ -65,8 +70,9 @@ export default function ViewSeat({
             )}
 
             <div className="text-center mt-6">
-              <p className="text-xs text-muted-foreground">
-                HAFSSeat.
+              <p className="text-xs font-medium">
+                <span className="bg-linear-to-r from-foreground to-secondary-foreground bg-clip-text text-transparent">HAF</span>
+                <span className="bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">Seat</span>
               </p>
             </div>
           </Card>
