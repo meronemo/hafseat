@@ -18,7 +18,7 @@ export async function confirmRepresentative(session: Session, req: Request) {
   const { error: e2 } = await supabase
     .schema("next_auth")
     .from("users")
-    .update({ classId: data[0].id, grade: userGrade, class: userClass, readAnnouncements: false })
+    .update({ classId: data[0].id, grade: userGrade, class: userClass, read_announcements: false })
     .eq("email", userEmail)
     .single()
   if (e2) throw new Error(e2.message)

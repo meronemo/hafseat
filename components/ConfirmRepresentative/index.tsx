@@ -112,7 +112,7 @@ export default function ConfirmRepresentative({
             </div>
 
             <p className="text-md text-muted-foreground">
-              위 학급의 대표자이신가요? 한 번 확인한 이후에는 변경할 수 없습니다.
+              위 학급의 대표자이신가요? 학급당 회장, 부회장 등 대표자 1~3명만이 사이트를 사용할 것이 권장됩니다.
             </p>
           </CardContent>
 
