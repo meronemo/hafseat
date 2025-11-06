@@ -14,7 +14,7 @@ export async function rating(session: Session, req: Request) {
     })
   if (error) throw new Error(error.message)
 
-  const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL
+  const slackWebhookUrl = process.env.SLACK_FEEDBACKS_WEBHOOK_URL
   const text = `
   New Rating
   name: ${name}
