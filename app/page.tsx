@@ -4,6 +4,7 @@ import { viewSeat } from "@/services/seat/view"
 import { getGeneralSettings } from "@/services/settings/general"
 import { getStudentsSettings } from "@/services/settings/students"
 import { getReadAnnouncements } from "@/services/announcements"
+import { getLastSeatRun } from "@/services/seat/last-run"
 import HomePage from "@/components/HomePage/index"
 
 export const revalidate = 0
@@ -18,11 +19,12 @@ export default async function Page() {
     redirect("/confirm-representative")
   }  
 
-  const [seatData, generalSettingsData, studentsSettingsData, readAnnouncementsData] = await Promise.all([
+  const [seatData, generalSettingsData, studentsSettingsData, readAnnouncementsData, lastSeatRunData] = await Promise.all([
     viewSeat(session),
     getGeneralSettings(session),
     getStudentsSettings(session),
-    getReadAnnouncements(session)
+    getReadAnnouncements(session),
+    getLastSeatRun(session)
   ])
 
   const isAdmin = session.user.role === "admin"
@@ -38,8 +40,11 @@ export default async function Page() {
 
   const readAnnouncements = readAnnouncementsData.readAnnouncements
 
+  const lastSeatDate = lastSeatRunData.date
+  const lastSeatBy = lastSeatRunData.runBy
+
   return <HomePage 
     sessionData={session}
-    data={{ isAdmin, seatCount, studentCount, isSeatNull, settingsChanged, readAnnouncements }}
+    data={{ isAdmin, seatCount, studentCount, isSeatNull, settingsChanged, readAnnouncements, lastSeatDate, lastSeatBy }}
   />
 }

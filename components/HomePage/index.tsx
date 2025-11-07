@@ -10,6 +10,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircleIcon, Bell, MessageCircle, ShieldUser } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { type Session } from "next-auth"
+import { josa } from "es-hangul"
 
 export interface HomeProps {
   sessionData: Session | null
@@ -20,15 +21,19 @@ export interface HomeProps {
     isSeatNull: boolean
     settingsChanged: boolean
     readAnnouncements: boolean
+    lastSeatDate: string | null
+    lastSeatBy: string | null
   }
 }
 
 export default function HomePage({ sessionData, data }: HomeProps) {
-  const { isAdmin=false, seatCount=0, studentCount=0, isSeatNull=true, settingsChanged=false, readAnnouncements: readAnnouncements=true } = data || {}
+  const { isAdmin=false, seatCount=0, studentCount=0, isSeatNull=true, settingsChanged=false, readAnnouncements: readAnnouncements=true, lastSeatDate, lastSeatBy } = data || {}
   
   const [isAnnouncementOpen, setIsAnnouncementOpen] = useState(false)
   const [isReadAnnouncements, setIsReadAnnouncements] = useState(readAnnouncements)
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
+
+  const lastSeatDisplay = (lastSeatDate && lastSeatBy) ? `마지막 자리 배치: ${lastSeatDate}에 ${josa(lastSeatBy, "이/가")} 실행함` : null
   
   const router = useRouter()
   useEffect(() => {
@@ -109,7 +114,7 @@ export default function HomePage({ sessionData, data }: HomeProps) {
             {sessionData ? (
               <div className="space-y-6">
                 <div className="text-center space-y-4">
-                  <UserArea session={sessionData} />
+                  <UserArea session={sessionData} lastSeatDisplay={lastSeatDisplay} />
                 </div>
 
                 {/* alerts for wrong settings */}
@@ -160,7 +165,7 @@ export default function HomePage({ sessionData, data }: HomeProps) {
                 </div>
               </div>
             ) : (
-              <UserArea session={null} />
+              <UserArea session={null} lastSeatDisplay={null} />
             )}
           </div>
         </div>

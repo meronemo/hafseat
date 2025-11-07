@@ -10,9 +10,10 @@ import { EditSeatButton } from "./UserArea/EditSeatButton"
 
 interface UserAreaProps {
   session: Session | null
+  lastSeatDisplay: string | null
 }
 
-export function UserArea({ session }: UserAreaProps) {
+export function UserArea({ session, lastSeatDisplay }: UserAreaProps) {
   if (!session) {
     return <LoginButton />
   }
@@ -41,6 +42,7 @@ export function UserArea({ session }: UserAreaProps) {
 
         <div className="bg-muted/30 rounded-lg px-3 py-2.5 items-center gap-3">
           <div className="text-xl font-bold mb-2">{displayClass}</div>
+          <div className="text-sm text-muted-foreground">{lastSeatDisplay}</div>
           <div className="flex-1 gap-2">
             <SettingsButton />
             <EditSeatButton />

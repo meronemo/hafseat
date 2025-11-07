@@ -229,6 +229,7 @@ export async function randomizeSeat(session: Session) {
     .update({ 
       seat: newSeat, 
       date: dateString,
+      run_by: session.user.name,
       settings: updatedSettings,
       students: updatedStudents
     })
