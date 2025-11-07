@@ -11,7 +11,7 @@ export default async function SettingsPage() {
     redirect("/")
   }
 
-  const { email, username, grade, class: userClass } = session.user
+  const { email, username, name, grade, class: userClass } = session.user
   const [{ settings }, { students }] = await Promise.all([
     getGeneralSettings(session),
     getStudentsSettings(session)
@@ -21,7 +21,8 @@ export default async function SettingsPage() {
     <Settings
       user={{
         email: email ?? "",
-        name: username ?? "",
+        username: username ?? "",
+        name: name ?? "",
         grade: grade ?? 0,
         class: userClass ?? ""
       }}

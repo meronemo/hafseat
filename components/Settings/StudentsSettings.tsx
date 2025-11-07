@@ -3,6 +3,7 @@
 import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { Plus, Trash2 } from "lucide-react"
 import { Student } from "@/types/settings"
 
@@ -59,9 +60,13 @@ export function StudentsSettings({ students, onStudentsChange }: StudentsSetting
   }
 
   return (
-    <div className="space-y-4">
+    <div className="border-t pt-6 space-y-4">
+      <div>
+        <h3 className="text-lg font-semibold mb-1">학생 설정</h3>
+        <p className="text-sm text-muted-foreground">학급의 학생 정보를 설정합니다.</p>
+      </div>
       {/* Add Student Form */}
-      <div className="bg-muted/30 rounded-lg p-4 space-y-3">
+      <div className="rounded-lg p-4 space-y-3 border">
         <h3 className="text-sm font-semibold">학생 추가</h3>
         <div className="flex gap-2">
           <Input
@@ -97,7 +102,7 @@ export function StudentsSettings({ students, onStudentsChange }: StudentsSetting
 
       {/* Students List */}
       <div className="space-y-2">
-        <div className="space-y-2">
+        <div className="space-y-3 p-4 rounded-md border">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-sm font-semibold">학생 목록 ({students.length}명)</h3>
           </div>
@@ -108,27 +113,29 @@ export function StudentsSettings({ students, onStudentsChange }: StudentsSetting
             </div>
           ) : (
             <div className="space-y-2">
-              {students.map((student) => (
-                <div
-                  key={student.number}
-                  className="flex items-center justify-between bg-muted/30 rounded-lg px-4 py-3 hover:bg-muted/50 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-semibold">
-                      {student.number}
-                    </div>
-                    <span className="font-medium">{student.name}</span>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => deleteStudent(student.number)}
-                    className="rounded-full text-destructive hover:text-destructive hover:bg-destructive/10"
+              <ScrollArea className="h-72">
+                {students.map((student) => (
+                  <div
+                    key={student.number}
+                    className="flex items-center justify-between px-4 py-3 hover:bg-muted/50 transition-colors rounded"
                   >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              ))}
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-semibold">
+                        {student.number}
+                      </div>
+                      <span className="font-medium">{student.name}</span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => deleteStudent(student.number)}
+                      className="rounded-full text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+              </ScrollArea>
             </div>
           )}
         </div>

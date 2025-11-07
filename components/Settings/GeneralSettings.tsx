@@ -2,13 +2,7 @@
 
 import { Switch } from "@/components/ui/switch"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface GeneralSettingsProps {
   rows: number
@@ -39,9 +33,9 @@ export function GeneralSettings({
   return (
     <div>
       <div className="space-y-6">
-        <div className="space-y-3">
+        <div className="border-t pt-6 space-y-4">
           <div>
-            <h3 className="font-medium mb-1">자리 배치</h3>
+            <h3 className="text-lg font-semibold mb-1">자리 구조</h3>
             <p className="text-sm text-muted-foreground">교실의 자리 구조를 설정합니다.</p>
           </div>
           <div className="flex gap-4 items-center">
@@ -77,7 +71,7 @@ export function GeneralSettings({
   
         <div className="border-t pt-6 space-y-4">
           <div>
-            <h3 className="font-medium mb-1">자리 배치 규칙</h3>
+            <h3 className="text-lg font-semibold mb-1">자리 배치 규칙</h3>
             <p className="text-sm text-muted-foreground">자리 배치 시 적용할 규칙을 선택합니다.</p>
           </div>
   
