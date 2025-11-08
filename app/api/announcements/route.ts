@@ -1,7 +1,7 @@
 import { apiHandler } from "@/lib/apiHandler"
 import { getAnnouncements, writeAnnouncements } from "@/services/announcements"
 
-export const GET = apiHandler(async (session, req) => {
+export const GET = apiHandler(async () => {
   return await getAnnouncements()
 }, false) // authorize = false
 
