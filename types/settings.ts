@@ -3,6 +3,7 @@ export type AvoidUnfavorableSeat = 'none' | 'back' | 'side' | 'both' | 'any'
 export interface Settings {
   rows: number
   columns: number
+  availableSeat: boolean[][]
   avoidSameSeat: boolean
   avoidSamePartner: boolean
   avoidUnfavorableSeat: AvoidUnfavorableSeat
@@ -24,6 +25,7 @@ export interface Students {
 export const defaultSettings: Settings = {
   rows: 4,
   columns: 8,
+  availableSeat: [],
   avoidSameSeat: true,
   avoidSamePartner: true,
   avoidUnfavorableSeat: 'any',

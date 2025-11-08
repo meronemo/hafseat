@@ -1,34 +1,39 @@
 "use client"
 
+import { type Dispatch, type SetStateAction } from "react"
 import { Switch } from "@/components/ui/switch"
-import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
 
 interface GeneralSettingsProps {
-  rows: number
-  columns: number
+  availableSeat: boolean[][]
   avoidSameSeat: boolean
   avoidSamePartner: boolean
   avoidUnfavorableSeat: "none" | "back" | "side" | "both" | "any"
-  onRowsChange: (value: number) => void
-  onColumnsChange: (value: number) => void
+  setAvailableSeat: Dispatch<SetStateAction<boolean[][]>>
   onAvoidSameSeatChange: (value: boolean) => void
   onAvoidSamePartnerChange: (value: boolean) => void
   onAvoidUnfavorableSeatChange: (value: "none" | "back" | "side" | "both" | "any") => void
 }
 
 export function GeneralSettings({
-  rows,
-  columns,
+  availableSeat,
   avoidSameSeat,
   avoidSamePartner,
   avoidUnfavorableSeat,
-  onRowsChange,
-  onColumnsChange,
+  setAvailableSeat,
   onAvoidSameSeatChange,
   onAvoidSamePartnerChange,
   onAvoidUnfavorableSeatChange,
 }: GeneralSettingsProps) {
+  // handle seat click
+  const handleClick = (r: number, c: number) => () => {
+    setAvailableSeat(prev => {
+      const newSeat = prev.map(row => row.slice())
+      newSeat[r][c] = !newSeat[r][c]
+      return newSeat
+    })
+  }
 
   return (
     <div>
@@ -36,39 +41,45 @@ export function GeneralSettings({
         <div className="border-t pt-6 space-y-4">
           <div>
             <h3 className="text-lg font-semibold mb-1">자리 구조</h3>
-            <p className="text-sm text-muted-foreground">교실의 자리 구조를 설정합니다.</p>
+            <p className="text-sm text-muted-foreground">
+              자리를 클릭해 사용 가능(흰색) / 사용 불가(빨간색)로 전환할 수 있고, 사용 가능 자리 수는 학생 수와 같아야 합니다.
+            </p>
           </div>
-          <div className="flex gap-4 items-center">
-            <div className="flex items-center gap-2">
-              <label htmlFor="rows" className="text-sm text-muted-foreground whitespace-nowrap">
-                행 (가로)
-              </label>
-              <Select value={String(rows)} onValueChange={(value) => onRowsChange(Number(value))}>
-                <SelectTrigger className="shadow-none">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="4">4</SelectItem>
-                  <SelectItem value="5">5</SelectItem>
-                </SelectContent>
-              </Select>
+          <div className="flex gap-4 justify-center items-center">
+            <div className="flex flex-col items-center w-full">
+              {availableSeat.length !== 0 ?
+                <>
+                  <div className="w-24 h-8 border-2 text-sm text-muted-foreground rounded-xs bg-card mb-2 flex items-center justify-center">
+                    교탁
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    {availableSeat.map((row, rowIndex) => (
+                      <div key={rowIndex} className="flex">
+                        {row.map((isUse, colIndex) => (
+                          <Button
+                            key={`${rowIndex}-${colIndex}`}
+                            id={`${rowIndex}-${colIndex}`}
+                            className={`relative w-8 h-8 border-2 rounded-xs m-1 transition-all cursor-pointer
+                              ${isUse 
+                                ? "bg-card border-primary/30 hover:border-primary/50" 
+                                : "bg-destructive border-destructive hover:bg-destructive/80"
+                              }
+                            `}
+                            onClick={handleClick(rowIndex, colIndex)}
+                          />
+                        ))} 
+                      </div>
+                    ))}
+                  </div>
+                </>
+              :
+                <p className="text-sm text-muted-foreground">학생 수가 20~35명이어야 설정할 수 있습니다.</p>
+              }
             </div>
-            <div className="flex items-center gap-2">
-              <label htmlFor="cols" className="text-sm text-muted-foreground whitespace-nowrap">
-                열 (세로)
-              </label>
-              <Input
-                id="cols"
-                type="number"
-                value={columns}
-                onChange={undefined}
-                className="w-14"
-                disabled={true}
-              />
-            </div>
-          </div>
+          </div>            
         </div>
-  
+
         <div className="border-t pt-6 space-y-4">
           <div>
             <h3 className="text-lg font-semibold mb-1">자리 배치 규칙</h3>

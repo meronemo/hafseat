@@ -16,7 +16,6 @@ export interface HomeProps {
   sessionData: Session | null
   data?: {
     isAdmin: boolean
-    seatCount: number
     studentCount: number
     isSeatNull: boolean
     settingsChanged: boolean
@@ -27,14 +26,14 @@ export interface HomeProps {
 }
 
 export default function HomePage({ sessionData, data }: HomeProps) {
-  const { isAdmin=false, seatCount=0, studentCount=0, isSeatNull=true, settingsChanged=false, readAnnouncements: readAnnouncements=true, lastSeatDate, lastSeatBy } = data || {}
+  const { isAdmin=false, studentCount=0, isSeatNull=true, settingsChanged=false, readAnnouncements: readAnnouncements=true, lastSeatDate, lastSeatBy } = data || {}
   
   const [isAnnouncementOpen, setIsAnnouncementOpen] = useState(false)
   const [isReadAnnouncements, setIsReadAnnouncements] = useState(readAnnouncements)
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
 
   const lastSeatDisplay = (lastSeatDate && lastSeatBy) ? `마지막 자리 배치: ${lastSeatDate}에 ${josa(lastSeatBy, "이/가")} 실행함` : null
-  
+
   const router = useRouter()
   useEffect(() => {
     // detect browser page back/forward
@@ -117,18 +116,8 @@ export default function HomePage({ sessionData, data }: HomeProps) {
                   <UserArea session={sessionData} lastSeatDisplay={lastSeatDisplay} />
                 </div>
 
-                {/* alerts for wrong settings */}
-                {seatCount < studentCount ? (
-                  <Alert className="w-fit mx-auto" variant="destructive">
-                    <AlertCircleIcon className="h-4 w-4" />
-                    <AlertTitle>
-                      자리 수({seatCount})보다 학생 수({studentCount})가 더 많아 배치가 불가합니다.
-                    </AlertTitle>
-                    <AlertDescription>
-                      학급 설정을 변경해주세요.
-                    </AlertDescription>
-                  </Alert>
-                ) : !studentCount ? (
+                {/* Alerts */}
+                {!studentCount ? (
                   <Alert className="w-fit mx-auto" variant="destructive">
                     <AlertCircleIcon className="h-4 w-4" />
                     <AlertTitle>
@@ -152,16 +141,16 @@ export default function HomePage({ sessionData, data }: HomeProps) {
                   <Alert className="w-fit mx-auto">
                     <AlertCircleIcon className="h-4 w-4" />
                     <AlertTitle>
-                      자리 구조 또는 학생 설정이 변경되어 다음 자리배치 시 규칙이 적용되지 않습니다.
+                      학생 설정이 변경되어 다음 자리배치 시 규칙이 적용되지 않습니다.
                     </AlertTitle>
                     <AlertDescription>
-                      현재 자리 수정을 통해 변경된 설정에 맞는 자리 배치를 직접 입력하여 규칙을 적용할 수 있습니다.
+                      현재 자리 수정을 통해 현재 설정에 맞는 자리를 직접 입력하여 규칙을 적용할 수 있습니다.
                     </AlertDescription>
                   </Alert>
                 ) : null}
 
                 <div className="text-center">
-                  <RunButton session={sessionData} disabled={(seatCount < studentCount || !studentCount)}/>
+                  <RunButton session={sessionData} disabled={!studentCount}/>
                 </div>
               </div>
             ) : (

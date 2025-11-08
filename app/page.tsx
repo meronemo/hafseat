@@ -32,8 +32,7 @@ export default async function Page() {
   const seat = seatData.seat
   const generalSettings = generalSettingsData.settings
   const students = studentsSettingsData.students
-  
-  const seatCount = generalSettings.rows * generalSettings.columns
+
   const studentCount = students.length
   const isSeatNull = !seat
   const settingsChanged = generalSettings.changed || studentsSettingsData.changed
@@ -45,6 +44,6 @@ export default async function Page() {
 
   return <HomePage 
     sessionData={session}
-    data={{ isAdmin, seatCount, studentCount, isSeatNull, settingsChanged, readAnnouncements, lastSeatDate, lastSeatBy }}
+    data={{ isAdmin, studentCount, isSeatNull, settingsChanged, readAnnouncements, lastSeatDate, lastSeatBy }}
   />
 }

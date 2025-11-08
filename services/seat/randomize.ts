@@ -21,6 +21,7 @@ async function makeNewSeat(
   const studentsCount = students.length
   const rows = settings.rows
   const cols = settings.columns
+  const availableSeat = settings.availableSeat
   const avoidUnfavorableSeat = settings.avoidUnfavorableSeat
 
   let newSeat: (Student | null)[][] = Array.from({ length: rows }, () =>
@@ -31,8 +32,8 @@ async function makeNewSeat(
   let seatPool: [number, number][] = []
   for (let r=0; r<rows; r++) {
     for (let c=0; c<cols; c++) {
-      if (r*cols+c+1 <= studentsCount) {
-        seatPool.push([r, c]);
+      if (availableSeat[r][c]) {
+        seatPool.push([r, c])
       }
     }
   }

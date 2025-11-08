@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { type Settings, Student } from "@/types/settings"
 import { GeneralSettings } from "@/components/Settings/GeneralSettings"
 import { StudentsSettings } from "@/components/Settings/StudentsSettings"
+import { makeAvailableSeat } from "@/lib/makeAvailableSeat"
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { useRouter } from "@bprogress/next/app"
@@ -29,6 +30,7 @@ export default function Settings({ user, generalSettings, students }: SettingsPr
   // General settings state
   const [rowsState, setRowsState] = useState(generalSettings.rows)
   const [columnsState, setColumnsState] = useState(generalSettings.columns)
+  const [availableSeat, setAvailableSeat] = useState<boolean[][]>(generalSettings.availableSeat)
   const [avoidSameSeatState, setAvoidSameSeatState] = useState(generalSettings.avoidSameSeat)
   const [avoidSamePartnerState, setAvoidSamePartnerState] = useState(generalSettings.avoidSamePartner)
   const [avoidUnfavorableSeatState, setAvoidUnfavorableSeatState] = useState(generalSettings.avoidUnfavorableSeat)
@@ -39,7 +41,32 @@ export default function Settings({ user, generalSettings, students }: SettingsPr
   // Save loading state
   const [saveLoading, setSaveLoading] = useState(false)
 
+  useEffect(() => {
+    // update rows and availableSeat when students count changes
+    const rows = Math.ceil(studentsState.length / columnsState)
+    const stuCnt = studentsState.length
+    if ((stuCnt == 20 || stuCnt == 35) || (stuCnt > 20 && stuCnt < 35 && rows != rowsState)) {
+      setAvailableSeat(makeAvailableSeat(rows, columnsState))
+    } else if (stuCnt < 20 || stuCnt > 35) {
+      setAvailableSeat([])
+    }
+
+    setRowsState(Math.min(5, Math.max(rows, 3)))
+  }, [studentsState.length, rowsState, columnsState])
+
   const handleSaveAll = async () => {
+    if (studentsState.length < 20 || studentsState.length > 35) {
+      toast.error("학생 수는 20~35명이어야 합니다.")
+      return
+    }
+
+    // Count true in availableSeat (number of available seats)
+    const trueCount = availableSeat.reduce((acc, row) => acc + row.filter(v => v === true).length, 0)
+    if (trueCount !== studentsState.length) {
+      toast.error("사용 가능 자리 수는 학생 수와 같아야 합니다. 자리 구조 설정을 확인해 주세요.")
+      return
+    }
+
     setSaveLoading(true)
     
     try {
@@ -50,6 +77,7 @@ export default function Settings({ user, generalSettings, students }: SettingsPr
         body: JSON.stringify({
           rows: rowsState,
           columns: columnsState,
+          availableSeat: availableSeat,
           avoidSameSeat: avoidSameSeatState,
           avoidSamePartner: avoidSamePartnerState,
           avoidUnfavorableSeat: avoidUnfavorableSeatState
@@ -127,13 +155,11 @@ export default function Settings({ user, generalSettings, students }: SettingsPr
 
             {/* General Settings Section */}
             <GeneralSettings 
-              rows={rowsState}
-              columns={columnsState}
+              availableSeat={availableSeat}
               avoidSameSeat={avoidSameSeatState}
               avoidSamePartner={avoidSamePartnerState}
               avoidUnfavorableSeat={avoidUnfavorableSeatState}
-              onRowsChange={setRowsState}
-              onColumnsChange={setColumnsState}
+              setAvailableSeat={setAvailableSeat}
               onAvoidSameSeatChange={setAvoidSameSeatState}
               onAvoidSamePartnerChange={setAvoidSamePartnerState}
               onAvoidUnfavorableSeatChange={setAvoidUnfavorableSeatState}
