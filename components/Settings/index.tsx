@@ -45,7 +45,7 @@ export default function Settings({ user, generalSettings, students }: SettingsPr
     // update rows and availableSeat when students count changes
     const rows = Math.ceil(studentsState.length / columnsState)
     const stuCnt = studentsState.length
-    if ((stuCnt == 20 || stuCnt == 35) || (stuCnt > 20 && stuCnt < 35 && rows != rowsState)) {
+    if (stuCnt >= 20 && stuCnt <= 35 && (rows != rowsState || availableSeat.length === 0)) {
       setAvailableSeat(makeAvailableSeat(rows, columnsState))
     } else if (stuCnt < 20 || stuCnt > 35) {
       setAvailableSeat([])

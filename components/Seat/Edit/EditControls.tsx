@@ -27,7 +27,6 @@ export function EditControls({students, seat, editedSeat, setEditedSeat}: EditCo
       for (const student of row) {
         if (student !== null) {
           if (editedSeatStudentNumbers.has(student.number)) {
-            console.log(editedSeatStudentNumbers, student.number)
             toast.error("중복되는 학생이 있어 저장되지 않았습니다.")
             stop()
             return

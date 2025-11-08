@@ -1,11 +1,12 @@
 "use client"
 
-import { useState, useRef } from "react"
+import React, { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Plus, Trash2 } from "lucide-react"
 import { Student } from "@/types/settings"
+import * as xlsx from "xlsx"
 
 interface StudentsSettingsProps {
   students: Student[]
@@ -59,46 +60,167 @@ export function StudentsSettings({ students, onStudentsChange }: StudentsSetting
     }
   }
 
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const data = new Uint8Array(event.target?.result as ArrayBuffer)
+      const workbook = xlsx.read(data, { type: 'array' })
+      const sheet = workbook.Sheets[workbook.SheetNames[0]]
+      const json = xlsx.utils.sheet_to_json<Record<string, any>>(sheet)
+      const headers = json.length > 0 ? Object.keys(json[0]) : []
+
+      // validation
+      if (!headers.includes("번호") || !headers.includes("이름")) {
+        setValidationError("엑셀 파일에 번호, 이름 열이 필요합니다. 템플릿에 맞추어서 작성해주세요.")
+        return
+      }
+
+      const numCount = new Array(66).fill(0)
+      for (let i=0; i<json.length; i++) {
+        const row = json[i]
+        const numberData = row["번호"]
+        const nameData = row["이름"]
+        const numberStr = String(numberData).trim()
+        const num = Number(numberStr)
+
+        
+        if (numberData === undefined || numberData === null || String(numberData).trim() === "") {
+          setValidationError(`엑셀 파일의 ${i+1}번째 행에 번호 값이 없습니다.`)
+          return
+        }
+        
+        if (nameData === undefined || nameData === null || String(nameData).trim() === "") {
+          setValidationError(`엑셀 파일의 ${i+1}번째 행에 이름 값이 없습니다.`)
+        }
+
+        if (!/^\d+$/.test(numberStr)) {
+          setValidationError(`엑셀 파일의 ${i+1}번째 행의 번호가 정수가 아닙니다.`)
+          return
+        }
+        
+        if (isNaN(num) || num < 1 || num > 65) {
+          setValidationError(`엑셀 파일의 ${i+1}번째 행의 번호가 1과 65 사이가 아닙니다.`)
+          return
+        }
+        
+        if (numCount[num] !== 0) {
+          setValidationError("중복되는 번호가 있습니다.")
+          return
+        }
+        numCount[num]++
+      }
+      setValidationError("")
+
+      // set state
+      const newStudents: Student[] = []
+      for (const row of json) {
+        const newStudent: Student = {
+          number: row["번호"],
+          name: row["이름"],
+          isSide: null,
+          isBack: null
+        }
+        newStudents.push(newStudent)
+      }
+      newStudents.sort((a, b) => a.number - b.number)
+      onStudentsChange(newStudents)
+    }
+    reader.readAsArrayBuffer(file)
+    ;(e.target as HTMLInputElement).value = ""
+  }
+
   return (
     <div className="border-t pt-6 space-y-4">
       <div>
         <h3 className="text-lg font-semibold mb-1">학생 설정</h3>
         <p className="text-sm text-muted-foreground">학급의 학생 정보를 설정합니다.</p>
       </div>
-      {/* Add Student Form */}
-      <div className="rounded-lg p-4 space-y-3 border">
-        <h3 className="text-sm font-semibold">학생 추가</h3>
-        <div className="flex gap-2">
-          <Input
-            ref={numberInputRef}
-            type="number"
-            placeholder="번호"
-            value={newStudentNumber}
-            onChange={(e) => setNewStudentNumber(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="w-18 shadow-xs"
-            min="1"
-            max="35"
-          />
-          <Input
-            type="text"
-            placeholder="이름"
-            value={newStudentName}
-            onChange={(e) => setNewStudentName(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="flex-1 shadow-xs"
-          />
-          <Button
-            onClick={addStudent}
-            size="sm"
-            className="rounded-full px-4 w-24"
-          >
-            <Plus className="w-4 h-4 mr-1.5" />
-            추가
-          </Button>
-        </div>
-        <p className="text-sm text-muted-foreground">{validationError}</p>
+
+      {/* Excel Upload Area */}
+      <div className="mt-3 flex items-center gap-3">
+        <span className="text-sm font-medium">엑셀 파일로 설정</span>
+
+        <Button
+          size="sm"
+          variant="ghost"
+          className="flex-1 border"
+          onClick={() => {
+        const wb = xlsx.utils.book_new()
+        const data = [
+          ["번호", "이름"],
+          [1, "김합스"],
+          [2, "박합스"]
+        ]
+        const ws = xlsx.utils.aoa_to_sheet(data)
+        xlsx.utils.book_append_sheet(wb, ws, "students")
+        const sheetFile = xlsx.write(wb, { bookType: "xlsx", type: "array" })
+        const blob = new Blob([sheetFile])
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = "students-template.xlsx"
+        document.body.appendChild(a)
+        a.click()
+        a.remove()
+        URL.revokeObjectURL(url)
+          }}
+        >
+          템플릿 다운로드
+        </Button>
+
+        <input
+          id="students-file"
+          type="file"
+          accept=".xlsx,.xls,.csv"
+          className="hidden"
+          onChange={handleFile}
+        />
+        <Button
+          size="sm"
+          variant="ghost"
+          className="flex-1 border"
+          onClick={() => {
+            ;(document.getElementById("students-file") as HTMLInputElement | null)?.click()
+          }}
+        >
+          파일 업로드
+        </Button>
       </div>
+
+      {/* Add Student Form */}
+      <div className="mt-3 flex items-center gap-3">
+        <span className="text-sm font-medium">학생 추가</span>
+        <Input
+          ref={numberInputRef}
+          type="number"
+          placeholder="번호"
+          value={newStudentNumber}
+          onChange={(e) => setNewStudentNumber(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className="flex-1 shadow-xs"
+          min="1"
+          max="35"
+        />
+        <Input
+          type="text"
+          placeholder="이름"
+          value={newStudentName}
+          onChange={(e) => setNewStudentName(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className="flex-2 shadow-xs"
+        />
+        <Button
+          onClick={addStudent}
+          size="sm"
+          className="rounded-full px-4 flex-1"
+        >
+          <Plus className="w-4 h-4 mr-1.5" />
+          추가
+        </Button>
+      </div>
+      <p className="text-sm text-muted-foreground">{validationError}</p>
 
       {/* Students List */}
       <div className="space-y-2">
