@@ -56,12 +56,6 @@ export default function EditSeat({
               <TeacherDesk viewMode="student"/>
               <EditSeatGrid editedSeat={editedSeat} setEditedSeat={setEditedSeat} students={students} cols={cols} />
             </CardContent>
-
-            <div className="text-center mt-6">
-              <p className="text-xs text-muted-foreground">
-                HAFSSeat.
-              </p>
-            </div>
           </Card>
         </div>
       </div>

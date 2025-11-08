@@ -60,9 +60,6 @@ export default function HomePage({ sessionData, data }: HomeProps) {
                 <span className="bg-linear-to-r from-foreground to-secondary-foreground bg-clip-text text-transparent">HAF</span>
                 <span className="bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">Seat</span>
               </h1>
-              <span className="absolute -top-2 -right-12 md:-right-14 text-xs font-semibold px-2 py-0.5 bg-primary text-primary-foreground rounded-full">
-                Beta
-              </span>
             </div>
             <p className=" text-muted-foreground">공정하고 간편한 자리 배치</p>
 
