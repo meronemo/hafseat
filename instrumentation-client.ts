@@ -3,6 +3,7 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from "@sentry/nextjs";
+import posthog from "posthog-js"
 
 Sentry.init({
   dsn: "https://27d3369f0db62637c43b0e7adc94f454@o1306592.ingest.us.sentry.io/4510298135330816",
@@ -31,7 +32,7 @@ Sentry.init({
       emailPlaceholder: "example@hafs.hs.kr",
       isRequiredLabel: "(필수)",
       messageLabel: "설명",
-      messagePlaceholder: "어떤 오류인가요? 어떤 상황에서 발생한 것인지 구체적으로 적어주실수록 도움이 됩니다.",
+      messagePlaceholder: "어떤 상황에서 발생한 오류인지 구체적으로 적어주세요. 현재 로그인한 계정의 이메일 주소와 오류가 발생한 시각을 알려주시면 오류 추적에 도움이 됩니다.",
       successMessageText: "제보해주셔서 감사합니다!",
       highlightToolText: "강조하기",
       hideToolText: "가리기",
@@ -58,3 +59,8 @@ Sentry.init({
 });
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
+
+posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
+  api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+  defaults: '2025-05-24'
+});

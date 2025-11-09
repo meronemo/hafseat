@@ -11,6 +11,7 @@ import { AlertCircleIcon, Bell, MessageCircle, ShieldUser } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { type Session } from "next-auth"
 import { josa } from "es-hangul"
+import posthog from "posthog-js"
 
 export interface HomeProps {
   sessionData: Session | null
@@ -45,10 +46,25 @@ export default function HomePage({ sessionData, data }: HomeProps) {
 
     window.addEventListener("pageshow", handlePageShow)
 
+    // posthog identify
+    if (sessionData?.user?.email) {
+      const identifiedKey = `posthog_identified_${sessionData.user.email}`
+      
+      if (!sessionStorage.getItem(identifiedKey)) {
+        posthog.identify(sessionData.user.email, {
+          email: sessionData.user.email,
+          name: sessionData.user.name,
+          grade: sessionData.user.grade,
+          class: sessionData.user.class,
+        })
+        sessionStorage.setItem(identifiedKey, 'true')
+      }
+    }
+
     return () => {
       window.removeEventListener("pageshow", handlePageShow)
     }
-  }, [router])
+  }, [router, sessionData])
 
   return (
     <main className="min-h-screen flex flex-col p-6">

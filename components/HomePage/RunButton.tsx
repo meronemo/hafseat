@@ -5,6 +5,7 @@ import { type Session } from "next-auth"
 import { Button } from "@/components/ui/button"
 import { Shuffle, Loader2 } from "lucide-react"
 import { useRouter } from "@bprogress/next/app"
+import posthog from "posthog-js"
 
 interface RunButtonProps {
   session: Session | null
@@ -24,6 +25,7 @@ export function RunButton({ session, disabled = false }: RunButtonProps) {
     })
     
     if (res.ok) {
+      posthog.capture("seat_randomized")
       router.push("/seat")
     } else {
       const error = await res.json()

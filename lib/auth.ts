@@ -80,13 +80,14 @@ export const authOptions: NextAuthOptions = {
       try {
         if (session?.user?.email) {
           const { data, error } = await supabase
-            .schema("next_auth")
-            .from("users")
-            .select("classId, grade, class, name, role")
-            .eq("email", session.user.email)
-            .single()
+          .schema("next_auth")
+          .from("users")
+          .select("id, classId, grade, class, name, role")
+          .eq("email", session.user.email)
+          .single()
           
           if (!error && data) {
+            session.user.id = data.id
             session.user.name = data.name
             session.user.username = String(session.user.name).replace(/\d+/g, '')
             session.user.studentId = String(String(session.user.name).match(/\d+/g))

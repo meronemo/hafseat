@@ -4,12 +4,14 @@ import { signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { LogOut } from "lucide-react"
 import { useProgress } from "@bprogress/next"
+import posthog from "posthog-js"
 
 export function LogoutButton() {
   const { start, stop } = useProgress()
 
   const handleClick = async () => {
     start()
+    posthog.reset()
     await signOut()
     stop()
   }
