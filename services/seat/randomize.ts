@@ -237,5 +237,21 @@ export async function randomizeSeat(session: Session) {
     .eq("id", classId)
   if (e2) throw new Error(e2.message)
 
+  const slackWebhookUrl = process.env.SLACK_SEAT_WEBHOOK_URL
+  const text = `Seat Run by ${session.user.name} at ${dateString}`
+
+  if (slackWebhookUrl) {
+    try {
+      const res = await fetch(slackWebhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text })
+      })
+      if (!res.ok) throw new Error("Error while sending seat webhook")
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   return { ok: true }
 }
