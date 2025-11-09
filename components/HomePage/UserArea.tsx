@@ -7,6 +7,7 @@ import { LoginButton } from "./UserArea/LoginButton"
 import { LogoutButton } from "./UserArea/LogoutButton"
 import { SettingsButton } from "./UserArea/SettingsButton"
 import { EditSeatButton } from "./UserArea/EditSeatButton"
+import { ViewSeatButton } from "./UserArea/ViewSeatButton"
 
 interface UserAreaProps {
   session: Session | null
@@ -43,8 +44,9 @@ export function UserArea({ session, lastSeatDisplay }: UserAreaProps) {
         <div className="bg-muted/30 rounded-lg px-3 py-2.5 items-center gap-3">
           <div className="text-xl font-bold mb-2">{displayClass}</div>
           <div className="text-sm text-muted-foreground">{lastSeatDisplay}</div>
-          <div className="flex-1 gap-2">
+          <div className="flex gap-2 mt-3 justify-center">
             <SettingsButton />
+            <ViewSeatButton />
             <EditSeatButton />
           </div>
         </div>

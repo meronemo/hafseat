@@ -14,7 +14,7 @@ export function EditSeatButton() {
       className="rounded-full px-2.5 py-1.5 h-auto"
     >
       <Pencil className="w-4 h-4 mr-1.5" />
-      <span className="text-sm">현재 자리 수정</span>
+      <span className="text-sm">자리 수정</span>
     </Button>
   )
 }
