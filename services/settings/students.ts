@@ -28,7 +28,7 @@ export async function writeStudentsSettings(session: Session, req: Request) {
   if (e1) throw new Error(e1.message)
 
   const currentStudentsData = data[0].students.data
-  if (!isEqual(body, currentStudentsData) || data[0].students.changed) {
+  if (!isEqual(body.data, currentStudentsData) || data[0].students.changed) {
     changed = true
   }
 
