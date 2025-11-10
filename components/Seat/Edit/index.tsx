@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Student } from "@/types/settings"
 import { EditSeatGrid } from "./EditSeatGrid"
 import { TeacherDesk } from "../TeacherDesk"
-import { BackButton } from "../BackButton"
+import { BackButton } from "../../BackButton"
 import { EditControls } from "./EditControls"
 
 interface EditSeatProps {
@@ -32,15 +32,16 @@ export default function EditSeat({
     ? Array(rows).fill(null).map(() => Array(cols).fill(null))
     : seat
   const [editedSeat, setEditedSeat] = useState<(Student | null)[][]>(initialSeat)
+  const [allowBack, setAllowBack] = useState(false)
   
   return (
     <div className=" bg-background p-8">
       <div className="min-h-screen max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <BackButton />
+          <BackButton allowBack={allowBack} setAllowBack={setAllowBack} showText={true} />
           <div className="flex items-center gap-4">
-            <EditControls students={students} seat={seat} editedSeat={editedSeat} setEditedSeat={setEditedSeat} />
+            <EditControls students={students} seat={seat} editedSeat={editedSeat} setEditedSeat={setEditedSeat} setAllowBack={setAllowBack} />
           </div>
           <div className="w-24"></div>
         </div>

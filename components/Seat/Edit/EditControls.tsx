@@ -12,9 +12,10 @@ interface EditControlsProps {
   seat: (Student | null)[][]
   editedSeat: (Student | null)[][]
   setEditedSeat: Dispatch<SetStateAction<(Student | null)[][]>>
+  setAllowBack: Dispatch<SetStateAction<boolean>>
 }
 
-export function EditControls({students, seat, editedSeat, setEditedSeat}: EditControlsProps) {
+export function EditControls({students, seat, editedSeat, setEditedSeat, setAllowBack}: EditControlsProps) {
   const { start, stop } = useProgress()
 
   const handleSave = async () => {
@@ -59,6 +60,7 @@ export function EditControls({students, seat, editedSeat, setEditedSeat}: EditCo
     
     if (res.ok) {
       toast.success("변경된 자리 배치가 저장되었습니다.")
+      setAllowBack(true)
       stop()
     } else {
       const data = await res.json()

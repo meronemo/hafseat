@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Student } from "@/types/settings"
 import { ViewSeatGrid } from "./ViewSeatGrid"
 import { TeacherDesk } from "../TeacherDesk"
-import { BackButton } from "../BackButton"
+import { BackButton } from "../../BackButton"
 import { ViewModeToggle } from "./ViewModeToggle"
 import { PrintShareControls } from "./PrintShareControls"
 import { Rating } from "./Rating"
@@ -36,7 +36,7 @@ export default function ViewSeat({
         {/* Header */}
         <div className="grid grid-cols-3 items-center">
           <div className="flex justify-start">
-            <BackButton />
+            <BackButton allowBack={true} setAllowBack={null} showText={true} />
           </div>
           <div className="flex items-center justify-center gap-4">
             <ViewModeToggle mode={viewMode} onChange={setViewMode} />

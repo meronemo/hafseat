@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { type Settings, Student } from "@/types/settings"
 import { GeneralSettings } from "@/components/Settings/GeneralSettings"
 import { StudentsSettings } from "@/components/Settings/StudentsSettings"
+import { BackButton } from "@/components/BackButton"
 import { makeAvailableSeat } from "@/lib/makeAvailableSeat"
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
@@ -38,8 +39,9 @@ export default function Settings({ user, generalSettings, students }: SettingsPr
   // Students state
   const [studentsState, setStudentsState] = useState(students)
 
-  // Save loading state
+  // Save state
   const [saveLoading, setSaveLoading] = useState(false)
+  const [allowBack, setAllowBack] = useState(false)
 
   useEffect(() => {
     // update rows and availableSeat when students count changes
@@ -93,6 +95,7 @@ export default function Settings({ user, generalSettings, students }: SettingsPr
 
       if (generalRes.ok && studentsRes.ok) {
         toast.success("모든 설정 변경사항이 저장되었습니다.")
+        setAllowBack(true)
         router.refresh()
       } else {
         const generalData = await generalRes.json()
@@ -114,17 +117,7 @@ export default function Settings({ user, generalSettings, students }: SettingsPr
         <Card className="shadow-xs">
           <CardHeader className="pb-3">
             <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  router.push("/")
-                  router.refresh()
-                }}
-                className="rounded-full -ml-2"
-              >
-                <ArrowLeft className="w-4 h-4" />
-              </Button>
+              <BackButton allowBack={allowBack} setAllowBack={setAllowBack} showText={false} />
               <CardTitle className="text-2xl">학급 설정</CardTitle>
             </div>
           </CardHeader>
