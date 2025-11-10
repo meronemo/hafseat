@@ -7,7 +7,7 @@ import { RunButton } from "@/components/HomePage/RunButton"
 import { AnnouncementDialog } from "@/components/HomePage/AnnouncementDialog"
 import { FeedbackDialog } from "@/components/HomePage/FeedbackDialog"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertCircleIcon, Bell, MessageCircle, ShieldUser } from "lucide-react"
+import { AlertCircleIcon, Bell, MessageCircle, Book, ShieldUser } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { type Session } from "next-auth"
 import { josa } from "es-hangul"
@@ -108,6 +108,19 @@ export default function HomePage({ sessionData, data }: HomeProps) {
                 <MessageCircle className="w-4 h-4 mr-2" />
                 의견 보내기
               </Button>
+
+                <Button
+                  variant="outline"
+                  className="group relative hover:bg-accent"
+                  onClick={() => {
+                    window.open(
+                      "https://qqloqxktjxldwpdp.public.blob.vercel-storage.com/guide.pdf"
+                    )
+                  }}
+                >
+                  <Book className="w-4 h-4 mr-2" />
+                  이용 안내
+                </Button>
 
               {isAdmin && (
                 <Button
