@@ -1,16 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useTransition } from "react"
 import { signOut } from "next-auth/react"
 import { useRouter } from "@bprogress/next/app"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card"
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
+import { confirmRepresentativeAction } from "@/app/actions/confirm-representative"
+import { toast } from "sonner"
 
 interface ConfirmRepresentativeProps {
   userEmail: string
@@ -26,35 +22,19 @@ export default function ConfirmRepresentative({
   userClass,
 }: ConfirmRepresentativeProps) {
   const [section, setSection] = useState(userClass === 1 || userClass === 10 ? 'A' : '')
-  const [isLoading, setIsLoading] = useState(false)
+  const [isPending, startTransition] = useTransition()
   const router = useRouter()
 
-  const handleConfirm = async () => {
-    setIsLoading(true)
-    
-    try {
-      const res = await fetch("/api/confirm-representative", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          "grade": userGrade,
-          "class": userClass + section,
-        }),
-      })
+  const handleConfirm = () => {
+    startTransition(async () => {
+      const res = await confirmRepresentativeAction(userGrade, userClass+section)
 
-      if (!res.ok) {
-        const data = await res.json()
-        console.error(data.error)
-        setIsLoading(false)
-        return
+      if (res.ok) {
+        router.push("/")
+      } else {
+        toast.error(`문제가 발생했습니다. ${res.message}`)
       }
-
-      router.push("/")
-      return
-    } catch (error) {
-      console.error(error)
-      setIsLoading(false)
-    }
+    })
   }
 
   return (
@@ -111,10 +91,10 @@ export default function ConfirmRepresentative({
             <Button
               size="lg"
               onClick={handleConfirm}
-              disabled={isLoading}
+              disabled={isPending}
               className="px-6"
             >
-              {isLoading ? "처리중..." : "맞아요"}
+              {isPending ? "처리중..." : "맞아요"}
             </Button>
           </CardFooter>
         </Card>

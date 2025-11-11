@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Plus, Trash2 } from "lucide-react"
-import { Student } from "@/types/settings"
+import { type Student } from "@/types/settings"
 import * as xlsx from "xlsx"
 
 interface StudentsSettingsProps {

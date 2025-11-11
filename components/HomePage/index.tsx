@@ -10,6 +10,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircleIcon, Bell, MessageCircle, Book, ShieldUser } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { type Session } from "next-auth"
+import { type Announcement } from "@/types/announcement"
+import { updateReadAnnouncementsAction } from "@/app/actions/announcements"
 import { josa } from "es-hangul"
 import posthog from "posthog-js"
 
@@ -20,6 +22,7 @@ export interface HomeProps {
     studentCount: number
     isSeatNull: boolean
     settingsChanged: boolean
+    announcements: Announcement[]
     readAnnouncements: boolean
     lastSeatDate: string | null
     lastSeatBy: string | null
@@ -27,7 +30,7 @@ export interface HomeProps {
 }
 
 export default function HomePage({ sessionData, data }: HomeProps) {
-  const { isAdmin=false, studentCount=0, isSeatNull=true, settingsChanged=false, readAnnouncements: readAnnouncements=true, lastSeatDate, lastSeatBy } = data || {}
+  const { isAdmin=false, studentCount=0, isSeatNull=true, settingsChanged=false, announcements=[], readAnnouncements: readAnnouncements=true, lastSeatDate, lastSeatBy } = data || {}
   
   const [isAnnouncementOpen, setIsAnnouncementOpen] = useState(false)
   const [isReadAnnouncements, setIsReadAnnouncements] = useState(readAnnouncements)
@@ -86,11 +89,7 @@ export default function HomePage({ sessionData, data }: HomeProps) {
                 onClick={() => {
                   setIsAnnouncementOpen(true)
                   setIsReadAnnouncements(true)
-                  fetch("/api/announcements/read", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ "data": true })
-                  })
+                  updateReadAnnouncementsAction(true)
                 }}
               >
                 <Bell className="w-4 h-4 mr-2" />
@@ -139,7 +138,7 @@ export default function HomePage({ sessionData, data }: HomeProps) {
             {sessionData ? (
               <div className="space-y-6">
                 <div className="text-center space-y-4">
-                  <UserArea session={sessionData} lastSeatDisplay={lastSeatDisplay} />
+                  <UserArea session={sessionData} isSeatNull={isSeatNull} lastSeatDisplay={lastSeatDisplay} />
                 </div>
 
                 {/* Alerts */}
@@ -180,7 +179,7 @@ export default function HomePage({ sessionData, data }: HomeProps) {
                 </div>
               </div>
             ) : (
-              <UserArea session={null} lastSeatDisplay={null} />
+              <UserArea session={null} isSeatNull={true} lastSeatDisplay={null} />
             )}
           </div>
         </div>
@@ -196,12 +195,12 @@ export default function HomePage({ sessionData, data }: HomeProps) {
 
       <AnnouncementDialog 
         isAdmin={isAdmin}
+        announcements={announcements}
         open={isAnnouncementOpen} 
         onOpenChange={setIsAnnouncementOpen} 
       />
 
       <FeedbackDialog 
-        userName={sessionData?.user.name}
         userEmail={sessionData?.user.email}
         open={isFeedbackOpen}
         onOpenChange={setIsFeedbackOpen} 

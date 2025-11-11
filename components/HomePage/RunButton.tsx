@@ -1,11 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useTransition } from "react"
 import { type Session } from "next-auth"
 import { Button } from "@/components/ui/button"
 import { Shuffle, Loader2 } from "lucide-react"
 import { useRouter } from "@bprogress/next/app"
 import posthog from "posthog-js"
+import { randomizeSeatAction } from "@/app/actions/seat"
+import { toast } from "sonner"
 
 interface RunButtonProps {
   session: Session | null
@@ -13,35 +15,31 @@ interface RunButtonProps {
 }
 
 export function RunButton({ session, disabled = false }: RunButtonProps) {
-  const [isRunning, setIsRunning] = useState(false)
+  const [isPending, startTransition] = useTransition()
   const router = useRouter()
 
   if (!session) return null
 
-  const handleRun = async () => {
-    setIsRunning(true)
-    const res = await fetch("/api/seat/randomize", {
-      method: "POST"
+  const handleRun = () => {
+    startTransition(async () => {
+      const res = await randomizeSeatAction()
+      if (res.ok) {
+        posthog.capture("seat_randomized")
+        router.push("/seat")
+      } else {
+        toast.error(`자리 배치 중 문제가 발생했습니다. ${res.message}`)
+      }
     })
-    
-    if (res.ok) {
-      posthog.capture("seat_randomized")
-      router.push("/seat")
-    } else {
-      const error = await res.json()
-      console.error(error)
-      setIsRunning(false)
-    }
   }
 
   return (
     <Button
       size="lg"
       onClick={handleRun}
-      disabled={isRunning || disabled}
+      disabled={isPending || disabled}
       className="text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all"
     >
-      {isRunning ? (
+      {isPending ? (
         <div className="flex gap-2 items-center">
           <Loader2 className="w-5 h-5 animate-spin" />
           <p>자리 배치 실행 중</p>

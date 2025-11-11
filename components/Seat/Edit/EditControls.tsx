@@ -1,11 +1,12 @@
 "use client"
 
 import { Dispatch, SetStateAction } from "react"
-import { Student } from "@/types/settings"
+import { type Student } from "@/types/settings"
 import { Button } from "@/components/ui/button"
 import { RotateCcw, Save } from "lucide-react"
 import { toast } from "sonner"
 import { useProgress } from "@bprogress/next"
+import { editSeatAction } from "@/app/actions/seat"
 
 interface EditControlsProps {
   students: Student[]
@@ -50,23 +51,14 @@ export function EditControls({students, seat, editedSeat, setEditedSeat, setAllo
       }
     }
 
-    const res = await fetch("/api/seat/edit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        seat: editedSeat
-      })
-    })
-    
+    const res = await editSeatAction(editedSeat)
     if (res.ok) {
       toast.success("변경된 자리 배치가 저장되었습니다.")
       setAllowBack(true)
-      stop()
     } else {
-      const data = await res.json()
-      console.log(data.error)
-      stop()
+      toast.error(`자리 배치 저장에 실패했습니다. ${res.message}`)
     }
+    stop()
   }
 
   return (  

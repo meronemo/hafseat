@@ -1,39 +1,29 @@
 "use client"
 
-import { useState } from "react"
+import { useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, RefreshCw } from "lucide-react"
 import { toast } from "sonner"
+import { initSettingsAction } from "@/app/actions/settings"
 
 export default function AdminPage() {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isPending, startTransition] = useTransition()
 
-  const handleInitAllSettings = async () => {
+  const handleInitAllSettings = () => {
     if (!confirm("Confirm")) {
       return
     }
 
-    setIsLoading(true)
-    try {
-      const res = await fetch("/api/settings/init", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ all: true })
-      })
-
+    startTransition(async () => {
+      const res = await initSettingsAction(true)
+  
       if (res.ok) {
         toast.success("모든 학급 설정이 초기화되었습니다.")
       } else {
-        const data = await res.json()
-        toast.error(data.error || "초기화에 실패했습니다.")
+        toast.error(res.message || "초기화에 실패했습니다.")
       }
-    } catch (error) {
-      console.error(error)
-      toast.error("초기화 중 오류가 발생했습니다.")
-    } finally {
-      setIsLoading(false)
-    }
+    })
   }
 
   return (
@@ -47,11 +37,11 @@ export default function AdminPage() {
             <h3 className="font-semibold text-sm">학급 설정 Initialize</h3>
             <Button
               onClick={handleInitAllSettings}
-              disabled={isLoading}
+              disabled={isPending}
               variant="destructive"
               className="w-full"
             >
-              {isLoading ? (
+              {isPending ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   초기화 중...

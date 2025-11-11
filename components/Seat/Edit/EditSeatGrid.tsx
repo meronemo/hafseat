@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Dispatch, SetStateAction } from "react"
-import { Student } from "@/types/settings"
+import { type Student } from "@/types/settings"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Button } from "@/components/ui/button"

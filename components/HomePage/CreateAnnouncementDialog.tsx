@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useTransition } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
+import { writeAnnouncementAction } from "@/app/actions/announcements"
 
 interface CreateAnnouncementDialogProps {
   open: boolean
@@ -17,7 +18,7 @@ interface CreateAnnouncementDialogProps {
 export function CreateAnnouncementDialog({ open, onOpenChange }: CreateAnnouncementDialogProps) {
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [isPending, startTransition] = useTransition()
 
   const handleSubmit = async () => {
     if (!title.trim() || !content.trim()) {
@@ -25,28 +26,17 @@ export function CreateAnnouncementDialog({ open, onOpenChange }: CreateAnnouncem
       return
     }
 
-    setIsLoading(true)
-    try {
-      const res = await fetch("/api/announcements", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, content })
-      })
-
+    startTransition(async () => {
+      const res = await writeAnnouncementAction(title, content)
       if (res.ok) {
         toast.success("공지사항이 작성되었습니다.")
         setTitle("")
         setContent("")
         onOpenChange(false)
       } else {
-        toast.error("공지사항 작성에 실패했습니다.")
+        toast.error(`공지사항 작성에 실패했습니다. ${res.message}`)
       }
-    } catch (error) {
-      console.error(error)
-      toast.error("공지사항 작성 중 오류가 발생했습니다.")
-    } finally {
-      setIsLoading(false)
-    }
+    })
   }
 
   return (
@@ -64,7 +54,7 @@ export function CreateAnnouncementDialog({ open, onOpenChange }: CreateAnnouncem
               placeholder="공지사항 제목을 입력하세요"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              disabled={isLoading}
+              disabled={isPending}
             />
           </div>
 
@@ -75,7 +65,7 @@ export function CreateAnnouncementDialog({ open, onOpenChange }: CreateAnnouncem
               placeholder="공지사항 내용을 입력하세요"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              disabled={isLoading}
+              disabled={isPending}
               rows={8}
               className="resize-none"
             />
@@ -86,12 +76,12 @@ export function CreateAnnouncementDialog({ open, onOpenChange }: CreateAnnouncem
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            disabled={isLoading}
+            disabled={isPending}
           >
             취소
           </Button>
-          <Button onClick={handleSubmit} disabled={isLoading}>
-            {isLoading ? (
+          <Button onClick={handleSubmit} disabled={isPending}>
+            {isPending ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 작성 중...

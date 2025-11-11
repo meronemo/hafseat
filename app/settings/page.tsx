@@ -1,8 +1,7 @@
 import { redirect } from "next/navigation"
 import { getServerSideSession } from "@/lib/session"
 import Settings from "@/components/Settings/index"
-import { getGeneralSettings } from "@/services/settings/general"
-import { getStudentsSettings } from "@/services/settings/students"
+import { getGeneralSettings, getStudentsSettings } from "@/lib/data/settings"
 
 export default async function SettingsPage() {
   const session = await getServerSideSession()

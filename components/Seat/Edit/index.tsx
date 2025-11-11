@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Student } from "@/types/settings"
+import { type Student } from "@/types/settings"
 import { EditSeatGrid } from "./EditSeatGrid"
 import { TeacherDesk } from "../TeacherDesk"
 import { BackButton } from "../../BackButton"

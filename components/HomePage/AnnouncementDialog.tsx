@@ -1,34 +1,21 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Bell, Plus } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Announcement } from "@/types/announcement"
+import { type Announcement } from "@/types/announcement"
 import { CreateAnnouncementDialog } from "./CreateAnnouncementDialog"
 
 interface AnnouncementDialogProps {
   isAdmin: boolean
+  announcements: Announcement[]
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
-export function AnnouncementDialog({ isAdmin, open, onOpenChange }: AnnouncementDialogProps) {
-  const [announcements, setAnnouncements] = useState<Announcement[]>([])
+export function AnnouncementDialog({ isAdmin, announcements, open, onOpenChange }: AnnouncementDialogProps) {
   const [isCreateOpen, setIsCreateOpen] = useState(false)
-
-  useEffect(() => {
-    const getAnnouncements = async () => {
-      try {
-        const res = await fetch("/api/announcements")
-        const data = await res.json()
-        setAnnouncements(data.announcements)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-    getAnnouncements()
-  }, [])
 
   return (
     <>

@@ -11,10 +11,11 @@ import { ViewSeatButton } from "./UserArea/ViewSeatButton"
 
 interface UserAreaProps {
   session: Session | null
+  isSeatNull: boolean
   lastSeatDisplay: string | null
 }
 
-export function UserArea({ session, lastSeatDisplay }: UserAreaProps) {
+export function UserArea({ session, isSeatNull, lastSeatDisplay }: UserAreaProps) {
   if (!session) {
     return <LoginButton />
   }
@@ -46,7 +47,7 @@ export function UserArea({ session, lastSeatDisplay }: UserAreaProps) {
           <div className="text-sm text-muted-foreground">{lastSeatDisplay}</div>
           <div className="flex gap-2 mt-3 justify-center">
             <SettingsButton />
-            <ViewSeatButton />
+            <ViewSeatButton disabled={isSeatNull} />
             <EditSeatButton />
           </div>
         </div>

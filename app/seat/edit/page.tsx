@@ -1,9 +1,8 @@
 import { redirect } from "next/navigation"
 import { getServerSideSession } from "@/lib/session"
-import { viewSeat } from "@/services/seat/view"
+import { getSeat } from "@/lib/data/seat"
+import { getGeneralSettings, getStudentsSettings } from "@/lib/data/settings"
 import EditSeat from "@/components/Seat/Edit/index"
-import { getGeneralSettings } from "@/services/settings/general"
-import { getStudentsSettings } from "@/services/settings/students"
 
 export default async function Page() {
   const session = await getServerSideSession()
@@ -13,7 +12,7 @@ export default async function Page() {
   }
 
   const [seatData, generalSettingsData, studentsSettingsData] = await Promise.all([
-    viewSeat(session),
+    getSeat(session),
     getGeneralSettings(session),
     getStudentsSettings(session)
   ])

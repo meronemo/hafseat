@@ -1,10 +1,9 @@
 import { redirect } from "next/navigation"
 import { getServerSideSession } from "@/lib/session"
-import { viewSeat } from "@/services/seat/view"
-import { getGeneralSettings } from "@/services/settings/general"
-import { getStudentsSettings } from "@/services/settings/students"
-import { getReadAnnouncements } from "@/services/announcements"
-import { getLastSeatRun } from "@/services/seat/last-run"
+import { getSeat } from "@/lib/data/seat"
+import { getGeneralSettings, getStudentsSettings } from "@/lib/data/settings"
+import { getAnnouncements, getReadAnnouncements } from "@/lib/data/announcements"
+import { getLastSeatRun } from "@/lib/data/seat"
 import HomePage from "@/components/HomePage/index"
 
 export const revalidate = 0
@@ -19,10 +18,11 @@ export default async function Page() {
     redirect("/confirm-representative")
   }  
 
-  const [seatData, generalSettingsData, studentsSettingsData, readAnnouncementsData, lastSeatRunData] = await Promise.all([
-    viewSeat(session),
+  const [seatData, generalSettingsData, studentsSettingsData, announcementsData, readAnnouncementsData, lastSeatRunData] = await Promise.all([
+    getSeat(session),
     getGeneralSettings(session),
     getStudentsSettings(session),
+    getAnnouncements(),
     getReadAnnouncements(session),
     getLastSeatRun(session)
   ])
@@ -37,6 +37,7 @@ export default async function Page() {
   const isSeatNull = !seat
   const settingsChanged = generalSettings.changed || studentsSettingsData.changed
 
+  const announcements = announcementsData.announcements
   const readAnnouncements = readAnnouncementsData.readAnnouncements
 
   const lastSeatDate = lastSeatRunData.date
@@ -44,6 +45,6 @@ export default async function Page() {
 
   return <HomePage 
     sessionData={session}
-    data={{ isAdmin, studentCount, isSeatNull, settingsChanged, readAnnouncements, lastSeatDate, lastSeatBy }}
+    data={{ isAdmin, studentCount, isSeatNull, settingsChanged, announcements, readAnnouncements, lastSeatDate, lastSeatBy }}
   />
 }

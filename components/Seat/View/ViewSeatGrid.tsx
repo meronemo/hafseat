@@ -1,6 +1,6 @@
 "use client"
 
-import { Student } from "@/types/settings"
+import { type Student } from "@/types/settings"
 
 interface ViewSeatGridProps {
   seat: (Student | null)[][]

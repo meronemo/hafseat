@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Star } from "lucide-react"
+import { ratingAction } from "@/app/actions/feedback"
 
 export function Rating() {
   const [rating, setRating] = useState<number | null>(null)
@@ -9,11 +10,7 @@ export function Rating() {
 
   const handleRating = (star: number) => {
     setRating(star)
-    fetch("/api/rating", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ star })
-    })
+    ratingAction(star)
   }
 
   return (

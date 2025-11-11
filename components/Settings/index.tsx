@@ -1,15 +1,15 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { type Settings, Student } from "@/types/settings"
+import { useState, useTransition } from "react"
+import { type Settings, type Student } from "@/types/settings"
 import { GeneralSettings } from "@/components/Settings/GeneralSettings"
 import { StudentsSettings } from "@/components/Settings/StudentsSettings"
 import { BackButton } from "@/components/BackButton"
-import { makeAvailableSeat } from "@/lib/makeAvailableSeat"
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { useRouter } from "@bprogress/next/app"
-import { ArrowLeft, User, Loader2 } from "lucide-react"
+import { User, Loader2 } from "lucide-react"
+import { updateGeneralSettingsAction, updateStudentsSettingsAction } from "@/app/actions/settings"
 import { toast } from "sonner"
 
 interface SettingsProps {
@@ -22,6 +22,18 @@ interface SettingsProps {
   }
   generalSettings: Settings
   students: Student[]
+}
+
+function makeAvailableSeat(r: number, c: number) {
+  const seatArray = []
+  for (let i=0; i<r; i++) {
+    const rowArray = []
+    for (let j=0; j<c; j++) {
+      rowArray.push(true)
+    }
+    seatArray.push(rowArray)
+  }
+  return seatArray
 }
 
 export default function Settings({ user, generalSettings, students }: SettingsProps) {
@@ -39,24 +51,27 @@ export default function Settings({ user, generalSettings, students }: SettingsPr
   // Students state
   const [studentsState, setStudentsState] = useState(students)
 
-  // Save state
-  const [saveLoading, setSaveLoading] = useState(false)
+  // Save
+  const [isPending, startTransition] = useTransition()
   const [allowBack, setAllowBack] = useState(false)
 
-  useEffect(() => {
-    // update rows and availableSeat when students count changes
-    const rows = Math.ceil(studentsState.length / columnsState)
-    const stuCnt = studentsState.length
-    if (stuCnt >= 20 && stuCnt <= 35 && (rows != rowsState || availableSeat.length === 0)) {
-      setAvailableSeat(makeAvailableSeat(rows, columnsState))
-    } else if (stuCnt < 20 || stuCnt > 35) {
+  // Update rows and availableSeat when students change
+  const handleStudentsChange = (newStudents: Student[]) => {
+    setStudentsState(newStudents)
+    
+    const stuCnt = newStudents.length
+    const calculatedRows = Math.ceil(stuCnt / columnsState)
+    const newRows = Math.min(5, Math.max(calculatedRows, 3))
+    
+    if (stuCnt >= 20 && stuCnt <= 35) {
+      setRowsState(newRows)
+      setAvailableSeat(makeAvailableSeat(newRows, columnsState))
+    } else {
       setAvailableSeat([])
     }
-
-    setRowsState(Math.min(5, Math.max(rows, 3)))
-  }, [studentsState.length, rowsState, columnsState])
-
-  const handleSaveAll = async () => {
+  }
+  
+  const handleSaveAll = () => {
     if (studentsState.length < 20 || studentsState.length > 35) {
       toast.error("학생 수는 20~35명이어야 합니다.")
       return
@@ -69,46 +84,26 @@ export default function Settings({ user, generalSettings, students }: SettingsPr
       return
     }
 
-    setSaveLoading(true)
-    
-    try {
-      // Save general settings
-      const generalRes = await fetch("/api/settings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          rows: rowsState,
-          columns: columnsState,
-          availableSeat: availableSeat,
-          avoidSameSeat: avoidSameSeatState,
-          avoidSamePartner: avoidSamePartnerState,
-          avoidUnfavorableSeat: avoidUnfavorableSeatState
-        }),
-      })
-
-      // Save students
-      const studentsRes = await fetch("/api/settings/students", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: studentsState }),
-      })
-
+    // save settings
+    startTransition(async () => {
+      const newGeneralSettings = {
+        rows: rowsState,
+        columns: columnsState,
+        availableSeat: availableSeat,
+        avoidSameSeat: avoidSameSeatState,
+        avoidSamePartner: avoidSamePartnerState,
+        avoidUnfavorableSeat: avoidUnfavorableSeatState,
+        changed: false
+      }
+      const generalRes = await updateGeneralSettingsAction(newGeneralSettings)
+      const studentsRes = await updateStudentsSettingsAction(studentsState)
       if (generalRes.ok && studentsRes.ok) {
         toast.success("모든 설정 변경사항이 저장되었습니다.")
-        setAllowBack(true)
         router.refresh()
       } else {
-        const generalData = await generalRes.json()
-        const studentsData = await studentsRes.json()
-        toast.error("설정 저장 중 오류가 발생했습니다.")
-        console.log(generalData.error, studentsData.error)
+        toast.error(`설정 저장에 실패했습니다. ${generalRes.message} ${studentsRes.message}`)
       }
-    } catch (error) {
-      toast.error("설정 저장 중 오류가 발생했습니다.")
-      console.error(error)
-    } finally {
-      setSaveLoading(false)
-    }
+    })
   }
 
   return (
@@ -143,7 +138,7 @@ export default function Settings({ user, generalSettings, students }: SettingsPr
             {/* Student Settings Section */}
             <StudentsSettings 
               students={studentsState}
-              onStudentsChange={setStudentsState}
+              onStudentsChange={handleStudentsChange}
             />
 
             {/* General Settings Section */}
@@ -163,10 +158,10 @@ export default function Settings({ user, generalSettings, students }: SettingsPr
               <Button
                 size="lg"
                 onClick={handleSaveAll}
-                disabled={saveLoading}
+                disabled={isPending}
                 className="w-full"
               >
-                {saveLoading ? (
+                {isPending ? (
                   <>
                     <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                     저장 중...

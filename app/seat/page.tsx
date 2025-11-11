@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { getServerSideSession } from "@/lib/session"
-import { viewSeat } from "@/services/seat/view"
+import { getSeat } from "@/lib/data/seat"
 import ViewSeat from "@/components/Seat/View/index"
 
 export default async function Page() {
@@ -10,7 +10,7 @@ export default async function Page() {
     redirect("/")
   }
 
-  const { seat, reverseSeat, grade, class: cls, date } = await viewSeat(session)
+  const { seat, reverseSeat, grade, class: cls, date } = await getSeat(session)
 
   return (
     <ViewSeat
