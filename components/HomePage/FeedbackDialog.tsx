@@ -9,14 +9,14 @@ import { Label } from "@/components/ui/label"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
-interface CreateAnnouncementDialogProps {
+interface FeedbackDialogProps {
   userName: string | null | undefined
   userEmail: string | null | undefined
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
-export function FeedbackDialog({ userName, userEmail, open, onOpenChange }: CreateAnnouncementDialogProps) {
+export function FeedbackDialog({ userName, userEmail, open, onOpenChange }: FeedbackDialogProps) {
   const [title, setTitle] = useState("")
   const [email, setEmail] = useState(userEmail ? userEmail : '')
   const [content, setContent] = useState("")
