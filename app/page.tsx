@@ -11,18 +11,22 @@ export const dynamic = "force-dynamic"
 
 export default async function Page() {
   const session = await getServerSideSession()
+
+  const announcementsData = await getAnnouncements()
+  const announcements = announcementsData.announcements
+
   if (!session) {
-    return <HomePage sessionData={null} />
+    return <HomePage sessionData={null} announcements={announcements} />
   }
+
   if (!session.user.classId) {
     redirect("/confirm-representative")
   }  
 
-  const [seatData, generalSettingsData, studentsSettingsData, announcementsData, readAnnouncementsData, lastSeatRunData] = await Promise.all([
+  const [seatData, generalSettingsData, studentsSettingsData, readAnnouncementsData, lastSeatRunData] = await Promise.all([
     getSeat(session),
     getGeneralSettings(session),
     getStudentsSettings(session),
-    getAnnouncements(),
     getReadAnnouncements(session),
     getLastSeatRun(session)
   ])
@@ -37,7 +41,6 @@ export default async function Page() {
   const isSeatNull = !seat
   const settingsChanged = generalSettings.changed || studentsSettingsData.changed
 
-  const announcements = announcementsData.announcements
   const readAnnouncements = readAnnouncementsData.readAnnouncements
 
   const lastSeatDate = lastSeatRunData.date
@@ -45,6 +48,7 @@ export default async function Page() {
 
   return <HomePage 
     sessionData={session}
-    data={{ isAdmin, studentCount, isSeatNull, settingsChanged, announcements, readAnnouncements, lastSeatDate, lastSeatBy }}
+    announcements={announcements}
+    data={{ isAdmin, studentCount, isSeatNull, settingsChanged, readAnnouncements, lastSeatDate, lastSeatBy }}
   />
 }

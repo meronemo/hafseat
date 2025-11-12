@@ -44,7 +44,7 @@ export function AnnouncementDialog({ isAdmin, announcements, open, onOpenChange 
               </p>
             ) : (
               announcements.map((announcement) => (
-                <div key={announcement.id} className="border rounded-lg p-4 space-y-2">
+                <div key={String(announcement.id)} className="border rounded-lg p-4 space-y-2">
                   <div className="flex items-start justify-between">
                     <div className="space-y-1">
                       <h3 className="font-semibold text-lg">{announcement.title}</h3>

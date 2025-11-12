@@ -17,20 +17,20 @@ import posthog from "posthog-js"
 
 export interface HomeProps {
   sessionData: Session | null
+  announcements: Announcement[]
   data?: {
     isAdmin: boolean
     studentCount: number
     isSeatNull: boolean
     settingsChanged: boolean
-    announcements: Announcement[]
     readAnnouncements: boolean
     lastSeatDate: string | null
     lastSeatBy: string | null
   }
 }
 
-export default function HomePage({ sessionData, data }: HomeProps) {
-  const { isAdmin=false, studentCount=0, isSeatNull=true, settingsChanged=false, announcements=[], readAnnouncements: readAnnouncements=true, lastSeatDate, lastSeatBy } = data || {}
+export default function HomePage({ sessionData, announcements, data }: HomeProps) {
+  const { isAdmin=false, studentCount=0, isSeatNull=true, settingsChanged=false, readAnnouncements: readAnnouncements=true, lastSeatDate, lastSeatBy } = data || {}
   
   const [isAnnouncementOpen, setIsAnnouncementOpen] = useState(false)
   const [isReadAnnouncements, setIsReadAnnouncements] = useState(readAnnouncements)
