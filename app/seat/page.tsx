@@ -6,7 +6,7 @@ import ViewSeat from "@/components/Seat/View/index"
 export default async function Page() {
   const session = await getServerSideSession()
 
-  if (!session || !session.user.classId) {
+  if (!session || !session.user.email || !session.user.classId) {
     redirect("/")
   }
 
@@ -16,6 +16,8 @@ export default async function Page() {
     <ViewSeat
       seat={seat}
       reverseSeat={reverseSeat}
+      userEmail={session.user.email}
+      classId={session.user.classId}
       grade={grade}
       cls={cls}
       date={date}

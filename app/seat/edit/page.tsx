@@ -23,6 +23,7 @@ export default async function Page() {
 
   return (
     <EditSeat
+      classId={session.user.classId}
       seat={seatData.seat}
       students={studentsSettingsData.students}
       needFresh={needFresh}

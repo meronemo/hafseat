@@ -6,6 +6,7 @@ import { Printer, Share } from "lucide-react"
 import { useReactToPrint } from "react-to-print"
 import * as htmlToImage from "html-to-image"
 import { useProgress } from "@bprogress/next"
+import posthog from "posthog-js"
 
 function base64ToBlob(base64: string, mime = "image/png") {
   const byteString = atob(base64.split(",")[1])
@@ -19,12 +20,14 @@ function base64ToBlob(base64: string, mime = "image/png") {
 
 interface PrintShareControlsProps {
   contentRef: RefObject<HTMLDivElement | null>
+  userEmail: string
+  classId: string
   grade: number
   cls: string
   date: string
 }
 
-export function PrintShareControls({contentRef, grade, cls, date}: PrintShareControlsProps) {
+export function PrintShareControls({contentRef, userEmail, classId, grade, cls, date}: PrintShareControlsProps) {
   const { start, stop } = useProgress()
   const reactToPrintFn = useReactToPrint({ contentRef })
 
@@ -45,6 +48,11 @@ export function PrintShareControls({contentRef, grade, cls, date}: PrintShareCon
     const scale = Math.min(scaleX, scaleY, 1)
     el.style.setProperty('--scale', scale.toString())
     reactToPrintFn()
+
+    posthog.capture('seat_printed', {
+      class_id: classId
+    })
+
     stop()
   }
 
@@ -98,8 +106,13 @@ export function PrintShareControls({contentRef, grade, cls, date}: PrintShareCon
                 width: width,
                 height: height,
                 path: imagePath
+              },
+              serverCallbackArgs: {
+                user_email: userEmail,
+                class_id: classId
               }
             })
+
             stop()
           })
           .catch(function(error: any) {

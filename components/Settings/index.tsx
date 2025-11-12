@@ -11,6 +11,7 @@ import { useRouter } from "@bprogress/next/app"
 import { User, Loader2 } from "lucide-react"
 import { updateGeneralSettingsAction, updateStudentsSettingsAction } from "@/app/actions/settings"
 import { toast } from "sonner"
+import posthog from "posthog-js"
 
 interface SettingsProps {
   user: {
@@ -19,6 +20,7 @@ interface SettingsProps {
     name: string
     grade: number
     class: string
+    classId: string
   }
   generalSettings: Settings
   students: Student[]
@@ -70,7 +72,7 @@ export default function Settings({ user, generalSettings, students }: SettingsPr
       setAvailableSeat([])
     }
   }
-  
+
   const handleSaveAll = () => {
     if (studentsState.length < 20 || studentsState.length > 35) {
       toast.error("학생 수는 20~35명이어야 합니다.")
@@ -98,6 +100,9 @@ export default function Settings({ user, generalSettings, students }: SettingsPr
       const generalRes = await updateGeneralSettingsAction(newGeneralSettings)
       const studentsRes = await updateStudentsSettingsAction(studentsState)
       if (generalRes.ok && studentsRes.ok) {
+        posthog.capture('settings_changed', {
+          class_id: user.classId
+        })
         toast.success("모든 설정 변경사항이 저장되었습니다.")
         router.refresh()
       } else {

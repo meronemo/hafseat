@@ -24,7 +24,9 @@ export function RunButton({ session, disabled = false }: RunButtonProps) {
     startTransition(async () => {
       const res = await randomizeSeatAction()
       if (res.ok) {
-        posthog.capture("seat_randomized")
+        posthog.capture('seat_randomized', {
+          class_id: session.user.classId
+        })
         router.push("/seat")
       } else {
         toast.error(`자리 배치 중 문제가 발생했습니다. ${res.message}`)

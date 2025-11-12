@@ -7,8 +7,10 @@ import { RotateCcw, Save } from "lucide-react"
 import { toast } from "sonner"
 import { useProgress } from "@bprogress/next"
 import { editSeatAction } from "@/app/actions/seat"
+import posthog from "posthog-js"
 
 interface EditControlsProps {
+  classId: string
   students: Student[]
   seat: (Student | null)[][]
   editedSeat: (Student | null)[][]
@@ -16,7 +18,7 @@ interface EditControlsProps {
   setAllowBack: Dispatch<SetStateAction<boolean>>
 }
 
-export function EditControls({students, seat, editedSeat, setEditedSeat, setAllowBack}: EditControlsProps) {
+export function EditControls({classId, students, seat, editedSeat, setEditedSeat, setAllowBack}: EditControlsProps) {
   const { start, stop } = useProgress()
 
   const handleSave = async () => {
@@ -53,6 +55,9 @@ export function EditControls({students, seat, editedSeat, setEditedSeat, setAllo
 
     const res = await editSeatAction(editedSeat)
     if (res.ok) {
+      posthog.capture('seat_edited', {
+        class_id: classId
+      })
       toast.success("변경된 자리 배치가 저장되었습니다.")
       setAllowBack(true)
     } else {

@@ -9,6 +9,7 @@ import { BackButton } from "../../BackButton"
 import { EditControls } from "./EditControls"
 
 interface EditSeatProps {
+  classId: string
   seat: (Student | null)[][]
   students: Student[]
   needFresh: boolean
@@ -19,6 +20,7 @@ interface EditSeatProps {
 }
 
 export default function EditSeat({
+  classId,
   seat,
   students,
   needFresh,
@@ -41,7 +43,7 @@ export default function EditSeat({
         <div className="flex items-center justify-between">
           <BackButton allowBack={allowBack} setAllowBack={setAllowBack} showText={true} />
           <div className="flex items-center gap-4">
-            <EditControls students={students} seat={seat} editedSeat={editedSeat} setEditedSeat={setEditedSeat} setAllowBack={setAllowBack} />
+            <EditControls classId={classId} students={students} seat={seat} editedSeat={editedSeat} setEditedSeat={setEditedSeat} setAllowBack={setAllowBack} />
           </div>
           <div className="w-24"></div>
         </div>

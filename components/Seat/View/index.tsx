@@ -13,6 +13,8 @@ import { Rating } from "./Rating"
 interface ViewSeatProps {
   seat: (Student | null)[][]
   reverseSeat: (Student | null)[][]
+  userEmail: string
+  classId: string
   grade: number
   cls: string
   date: string
@@ -22,6 +24,8 @@ interface ViewSeatProps {
 export default function ViewSeat({
   seat,
   reverseSeat,
+  userEmail,
+  classId,
   grade,
   cls,
   date,
@@ -40,7 +44,7 @@ export default function ViewSeat({
           </div>
           <div className="flex items-center justify-center gap-4">
             <ViewModeToggle mode={viewMode} onChange={setViewMode} />
-            <PrintShareControls contentRef={contentRef} grade={grade} cls={cls} date={date} />
+            <PrintShareControls contentRef={contentRef} userEmail={userEmail} classId={classId} grade={grade} cls={cls} date={date} />
           </div>
           <div className="flex justify-end">
             <Rating />
