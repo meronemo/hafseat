@@ -2,6 +2,7 @@ import type { NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import { SupabaseAdapter } from "@next-auth/supabase-adapter"
 import { supabase } from "@/lib/db"
+import PostHogClient from "./posthog"
 
 const isProd = process.env.NODE_ENV === "production"
 
@@ -70,6 +71,15 @@ export const authOptions: NextAuthOptions = {
               body: JSON.stringify({ text })
             }).catch(error => console.error("Slack webhook error:", error))
           }
+        }
+
+        // log posthog event
+        const posthog = PostHogClient()
+        if (user.email) {
+          posthog.capture({
+            distinctId: user.email,
+            event: "signed_in"
+          })
         }
       } catch (e) {
         console.error("signIn callback error:", e)
