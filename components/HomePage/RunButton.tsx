@@ -29,6 +29,7 @@ export function RunButton({ session, disabled = false }: RunButtonProps) {
         })
         router.push("/seat")
       } else {
+        console.error(res.message)
         toast.error(`자리 배치 중 문제가 발생했습니다. ${res.message}`)
       }
     })

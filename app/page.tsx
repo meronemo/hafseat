@@ -1,9 +1,8 @@
 import { redirect } from "next/navigation"
 import { getServerSideSession } from "@/lib/session"
-import { getSeat } from "@/lib/data/seat"
+import { getSeat, getLastSeatRun } from "@/lib/data/seat"
 import { getGeneralSettings, getStudentsSettings } from "@/lib/data/settings"
 import { getAnnouncements, getReadAnnouncements } from "@/lib/data/announcements"
-import { getLastSeatRun } from "@/lib/data/seat"
 import HomePage from "@/components/HomePage/index"
 
 export const revalidate = 0
@@ -39,12 +38,13 @@ export default async function Page() {
 
   const studentCount = students.length
   const isSeatNull = !seat
-  const settingsChanged = generalSettings.changed || studentsSettingsData.changed
-
+  
   const readAnnouncements = readAnnouncementsData.readAnnouncements
-
+  
   const lastSeatDate = lastSeatRunData.date
   const lastSeatBy = lastSeatRunData.runBy
+  const isFirstSeat = !(lastSeatRunData.runBy) // true if no run_by data exists (no seat organized using this app)
+  const settingsChanged = !isFirstSeat && (generalSettings.changed || studentsSettingsData.changed)
 
   return <HomePage 
     sessionData={session}
