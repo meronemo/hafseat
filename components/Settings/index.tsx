@@ -104,6 +104,7 @@ export default function Settings({ user, generalSettings, students }: SettingsPr
           class_id: user.classId
         })
         toast.success("모든 설정 변경사항이 저장되었습니다.")
+        setAllowBack(true)
         router.refresh()
       } else {
         toast.error(`설정 저장에 실패했습니다. ${generalRes.message} ${studentsRes.message}`)
