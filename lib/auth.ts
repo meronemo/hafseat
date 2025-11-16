@@ -31,25 +31,7 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user }) {
-      // in production: block if not student (email format must be 6 digits only)
-      if (isProd && user.email) {
-        const emailUsername = user.email.split('@')[0]
-        const isStudent = /^\d{6}$/.test(emailUsername)
-        if (!isStudent) {
-          const slackWebhookUrl = process.env.SLACK_USER_WEBHOOK_URL
-          const text = `Teacher login attempted ${user.email} | ${user.name}`
-      
-          if (slackWebhookUrl) {
-            await fetch(slackWebhookUrl, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ text })
-            }).catch(error => console.error("Slack webhook error:", error))
-          }
-          return '/auth/error?error=TeacherNotAllowed'
-        }
-      }
-
+      if (!user.email) return false
       try {
         // Check if new user
         const { data } = await supabase
@@ -89,14 +71,15 @@ export const authOptions: NextAuthOptions = {
     async session({ session }) {
       try {
         if (session?.user?.email) {
-          const { data, error } = await supabase
+          const { data, error: e1 } = await supabase
           .schema("next_auth")
           .from("users")
           .select("id, classId, grade, class, name, role")
           .eq("email", session.user.email)
           .single()
+          if (e1) console.error(e1)
           
-          if (!error && data) {
+          if (!e1 && data) {
             session.user.id = data.id
             session.user.name = data.name
             session.user.username = String(session.user.name).replace(/\d+/g, '')

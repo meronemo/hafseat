@@ -9,6 +9,7 @@ export default async function ConfirmRepresentativePage() {
     redirect("/")
   }
 
+  const userRole = String(session.user?.role)
   const userEmail = String(session.user?.email)
   const userName = String(session.user?.name)
   const userStudentId = String(session.user?.studentId)
@@ -17,6 +18,7 @@ export default async function ConfirmRepresentativePage() {
 
   return (
     <ConfirmRepresentative
+      userRole={userRole}
       userEmail={userEmail}
       userName={userName}
       userGrade={userGrade}
