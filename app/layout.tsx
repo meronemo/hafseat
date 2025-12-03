@@ -15,6 +15,18 @@ const pretendard = localFont({
   variable: "--font-pretendard",
 })
 
+export const metadata = {
+  title: "HAFSeat",
+  description: "공정하고 간편한 자리 배치",
+  openGraph: {
+    title: "HAFSeat",
+    description: "공정하고 간편한 자리 배치",
+    url: "https://hafseat.com",
+    siteName: "HAFSeat",
+    type: "website",
+  },
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
